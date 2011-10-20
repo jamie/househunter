@@ -1,4 +1,5 @@
 class Listing < ActiveRecord::Base
+  IGNORED_ATTRS = %w(PropertyImagePath PropertyLowResImagePath)
   UNIMPORTANT_ATTRS = %w(PropertyImagePath PropertyLowResImagePath PropertyLowResPhotos Latitude Longitude OrganizationName)
   
   def self.import(attrs)
@@ -10,15 +11,19 @@ class Listing < ActiveRecord::Base
 
   def record(attrs)
     return if last_imported == attrs
-    print '.'
+    return if ((last_imported.diff attrs).keys - IGNORED_ATTRS).empty?
     if json.blank?
+      print '*'
       self.json = attrs.to_json
-    else
-      self.json = self.json + "\n" + attrs.to_json
-    end
-    if !((last_imported.diff attrs).keys - UNIMPORTANT_ATTRS).empty?
-      p ((last_imported.diff attrs).keys - UNIMPORTANT_ATTRS) unless last_imported.empty?
       self.last_import = Time.now
+    else
+      print '.'
+      p (last_imported.diff attrs)
+      p (attrs.diff last_imported)
+      self.json = self.json + "\n" + attrs.to_json
+      if !((last_imported.diff attrs).keys - UNIMPORTANT_ATTRS).empty?
+        self.last_import = Time.now
+      end
     end
     save
   end
@@ -37,7 +42,7 @@ class Listing < ActiveRecord::Base
   end
   
   def map_icon_uri
-    dot = (last_import > 2.hours.ago ? '-dot' : '')
+    dot = (last_import > 24.hours.ago ? '-dot' : '')
     color = case
     when price_int < 180_000; 'pink'
     when price_int < 210_000; 'purple'
