@@ -1,7 +1,21 @@
+class Hash
+  def diff(h2)
+    self.dup.delete_if { |k, v| h2[k] == v }.merge(h2.dup.delete_if { |k, v| self.has_key?(k) })
+  end
+end
+
 class Listing < ActiveRecord::Base
   IGNORED_ATTRS = %w(PropertyImagePath PropertyLowResImagePath)
   UNIMPORTANT_ATTRS = %w(PropertyImagePath PropertyLowResImagePath PropertyLowResPhotos Latitude Longitude OrganizationName)
   
+  def self.filtered
+    where("status != ?", 'ignore')
+  end
+
+  def self.recent
+    where("updated_at > ?", 5.days.ago)
+  end
+
   def self.import(attrs)
     listing = where(:mls => attrs['MLS']).first
     listing ||= create(:mls => attrs['MLS'])
@@ -15,14 +29,14 @@ class Listing < ActiveRecord::Base
     if json.blank?
       print '*'
       self.json = attrs.to_json
-      self.last_import = Time.now
+      self.imported_at = Time.now
     else
       print '.'
       p (last_imported.diff attrs)
       p (attrs.diff last_imported)
       self.json = self.json + "\n" + attrs.to_json
       if !((last_imported.diff attrs).keys - UNIMPORTANT_ATTRS).empty?
-        self.last_import = Time.now
+        self.imported_at = Time.now
       end
     end
     save
@@ -42,7 +56,7 @@ class Listing < ActiveRecord::Base
   end
   
   def map_icon_uri
-    dot = (last_import > 24.hours.ago ? '-dot' : '')
+    dot = (imported_at > 24.hours.ago ? '-dot' : '')
     color = case
     when price_int < 180_000; 'pink'
     when price_int < 210_000; 'purple'

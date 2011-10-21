@@ -4,9 +4,11 @@
 
 require './setup'
 
+require 'sinatra/activerecord/rake'
+
 namespace :mls do
   desc 'Pull available properties from realtor.ca'
-  task :import => :environment do
+  task :import do
     Importer.new.do_import
   end
 end

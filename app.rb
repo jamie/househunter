@@ -3,7 +3,7 @@ require './setup'
 require 'sinatra'
 
 get '/' do
-  @listings = Listing.where("last_import > ?", 5.days.ago).order(:last_import).all.reverse
+  @listings = Listing.recent.all
   erb :index
 end
 
@@ -36,8 +36,6 @@ __END__
       var infoWindows = [];
       var markers = [];
       <% @listings.each do |listing| %>
-        <% next if listing.last_import < 5.days.ago %>
-
         markers[<%= listing.id %>] = new google.maps.Marker({
           position: new google.maps.LatLng(<%= listing.lat %>,<%= listing.lng %>),
           map: map, 
@@ -77,8 +75,8 @@ __END__
         <a href="<%= listing.url %>"><%= listing.address %></a><br>
         <%= listing.last_imported["OrganizationName"].join(',<br> ') %><br>
         <img src="<%= listing.last_imported['PropertyLowResImagePath'] + listing.last_imported['PropertyLowResPhotos'].first.to_s %>"/><br>
-        <%= listing.price %> on <%= listing.last_import.strftime('%d %b') %>
-        <% if listing.last_import - listing.created_at > 10 %> (since <%= listing.created_at.strftime('%d %b') %>)<% end %>
+        <%= listing.price %> on <%= listing.imported_at.strftime('%d %b') %>
+        <% if listing.imported_at - listing.created_at > 10 %> (since <%= listing.created_at.strftime('%d %b') %>)<% end %>
         <br>
         <%= listing.last_imported["Bedrooms"] %> bed, <%= listing.last_imported["Bathrooms"] %> bath<br>
       </div>
