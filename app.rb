@@ -3,8 +3,14 @@ require './setup'
 require 'sinatra'
 
 get '/' do
-  @listings = Listing.recent.all
+  @listings = Listing.recent.filtered.all
   erb :index
+end
+
+post '/listing/:id/:status' do
+  @listing = Listing.find(params[:id])
+  @listing.status = params[:status]
+  @listing.save
 end
 
 __END__
@@ -15,14 +21,20 @@ __END__
 <html>
 <head>
   <title>Househunter</title>
+  <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.3.0/bootstrap.min.css">
   <style type="text/css">
-    #map_canvas { width: 100%; height: 700px; }
+    #map_canvas { width: 200px; height: 200px; overflow: hidden; }
     #map_legend { position: absolute; bottom: 10px; left: 10px; background: white; }
+    #map_legend table { margin: 0; }
+    #map_legend th, #map_legend td { padding: 0; margin: 0; }
+    .listing_info { width: 240px; }
+    .photo { float: left; }
   </style>
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
   <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
   <script type="text/javascript">
+    var markers = [];
     function initialize() {
       var latlng = new google.maps.LatLng(49.176766,-123.969383);
       var myOptions = {
@@ -34,11 +46,11 @@ __END__
 
       var infoContents = [];
       var infoWindows = [];
-      var markers = [];
       <% @listings.each do |listing| %>
         markers[<%= listing.id %>] = new google.maps.Marker({
           position: new google.maps.LatLng(<%= listing.lat %>,<%= listing.lng %>),
-          map: map, 
+          map: map,
+          <% if listing.map_icon_uri =~ /star/ %>zIndex: 999,<% end %>
           icon: '<%= listing.map_icon_uri %>',
           title: "<%= listing.address %>"
         });
@@ -51,12 +63,27 @@ __END__
           infoWindow.open(map,markers[<%= listing.id %>]);
         });
       <% end %>
+
+      $('#map_canvas').css('height', document.height);
+      $('#map_canvas').css('width',  document.width);
+    }
+    function wrap_links() {
+      $('.listing_info .status').live('click', function() {
+        $.ajax(this.href, {type: 'POST'});
+        m = this.href.match('listing/([0-9]+)/(.*)');
+        if (m) {
+          if (m[2] == 'ignore') { markers[m[1]].setMap(null); }
+          if (m[2] == 'remember') { markers[m[1]].setIcon('/starpin.png'); }
+        }
+        return false;
+      });
     }
   </script>
 </head>
 
-<body onload="initialize();">
-  <div id="map_canvas"></div>
+<body onload="initialize(); wrap_links();">
+  <div id="map_canvas">
+  </div>
   <div id="map_legend">
     <table>
       <tr><td>     </td><td><img src="http://maps.google.com/mapfiles/ms/icons/pink.png"></td>  <td>$180k</td></tr>
@@ -70,15 +97,23 @@ __END__
   </div>
 
   <% @listings.each do |listing| %>
-    <div style="float: left; width: 240px; height: 220px;">
-      <div id="listing_<%= listing.id %>">
+    <div style="float: left; height: 200px; display: none;" id="listing_<%= listing.id %>" >
+      <div class="listing_info">
         <a href="<%= listing.url %>"><%= listing.address %></a><br>
         <%= listing.last_imported["OrganizationName"].join(',<br> ') %><br>
-        <img src="<%= listing.last_imported['PropertyLowResImagePath'] + listing.last_imported['PropertyLowResPhotos'].first.to_s %>"/><br>
-        <%= listing.price %> on <%= listing.imported_at.strftime('%d %b') %>
-        <% if listing.imported_at - listing.created_at > 10 %> (since <%= listing.created_at.strftime('%d %b') %>)<% end %>
+        <img class="photo" src="<%= listing.last_imported['PropertyLowResImagePath'] + listing.last_imported['PropertyLowResPhotos'].first.to_s %>"/>
+        <strong>&nbsp; &nbsp; <%= listing.price %></strong><br>
+        Added <%= listing.created_at.strftime('%d %b') %><br>
+        <% if listing.imported_at - listing.created_at > 10 %> Updated <%= listing.created_at.strftime('%d %b') %><br><% end %>
         <br>
         <%= listing.last_imported["Bedrooms"] %> bed, <%= listing.last_imported["Bathrooms"] %> bath<br>
+        <% if listing.status != 'ignore' %>
+          <a class="status" href="/listing/<%= listing.id %>/ignore">ignore</a>
+        <% end %>
+        <% if listing.status == '' %>
+          <a class="status" href="/listing/<%= listing.id %>/remember">remember</a><br/>
+        <% end %>
+        <%= listing.status %>
       </div>
       <% "<p>#{listing.last_imported}</p>" %>
     </div>

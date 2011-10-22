@@ -56,7 +56,8 @@ class Listing < ActiveRecord::Base
   end
   
   def map_icon_uri
-    dot = (imported_at > 24.hours.ago ? '-dot' : '')
+    return "/starpin.png" if status == 'remember'
+
     color = case
     when price_int < 180_000; 'pink'
     when price_int < 210_000; 'purple'
@@ -66,7 +67,8 @@ class Listing < ActiveRecord::Base
     when price_int < 330_000; 'orange'
     else                    ; 'red'
     end
-    "http://maps.google.com/mapfiles/ms/icons/#{color}#{dot}.png"
+    style = (imported_at > 20.hours.ago ? '-dot' : '')
+    "http://maps.google.com/mapfiles/ms/icons/#{color}#{style}.png"
   end
   
   def price_int
