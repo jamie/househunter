@@ -1,10 +1,19 @@
 require './setup'
 
 require 'sinatra'
+require 'cgi'
+require 'open-uri'
 
 get '/' do
   @listings = Listing.recent.filtered.all
   erb :index
+end
+
+get "/mls" do
+  out = open(params[:url]).read
+  out.sub!("<SCRIPT LANGUAGE='Javascript'>if (window != top) top.location.href = location.href;</SCRIPT>", "")
+  out.sub!('"REALTOR">', '"REALTOR"><base href="http://www.realtor.ca/">')
+  out
 end
 
 post '/listing/:id/:status' do
@@ -23,6 +32,7 @@ __END__
   <title>Househunter</title>
   <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.3.0/bootstrap.min.css">
   <style type="text/css">
+    #mls_frame { position: absolute; top: 0; right: 0; }
     #map_canvas { width: 200px; height: 200px; overflow: hidden; }
     #map_legend { position: absolute; bottom: 10px; left: 10px; background: white; }
     #map_legend table { margin: 0; }
@@ -63,9 +73,12 @@ __END__
           infoWindow.open(map,markers[<%= listing.id %>]);
         });
       <% end %>
-
+    }
+    function resize() {
+      $('#mls_frame').css('height', document.height-4);
+      $('#mls_frame').css('width', 605);
       $('#map_canvas').css('height', document.height);
-      $('#map_canvas').css('width',  document.width);
+      $('#map_canvas').css('width', document.width - $('#mls_frame').width());
     }
     function wrap_links() {
       $('.listing_info .status').live('click', function() {
@@ -81,7 +94,7 @@ __END__
   </script>
 </head>
 
-<body onload="initialize(); wrap_links();">
+<body onload="initialize(); resize(); wrap_links();">
   <div id="map_canvas">
   </div>
   <div id="map_legend">
@@ -95,11 +108,12 @@ __END__
       <tr><td>$330k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/red.png"></td>   <td>     </td></tr>
     </table>
   </div>
+  <iframe id="mls_frame" name="mls_frame">You need a new browser.</iframe>
 
   <% @listings.each do |listing| %>
     <div style="float: left; height: 200px; display: none;" id="listing_<%= listing.id %>" >
       <div class="listing_info">
-        <a href="<%= listing.url %>"><%= listing.address %></a><br>
+        <a href="/mls?url=<%= CGI.escape listing.url %>" target="mls_frame"><%= listing.address %></a><br>
         <%= listing.last_imported["OrganizationName"].join(',<br> ') %><br>
         <img class="photo" src="<%= listing.last_imported['PropertyLowResImagePath'] + listing.last_imported['PropertyLowResPhotos'].first.to_s %>"/>
         <strong>&nbsp; &nbsp; <%= listing.price %></strong><br>
