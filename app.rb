@@ -9,6 +9,16 @@ get '/' do
   erb :index
 end
 
+get '/all' do
+  @listings = Listing.recent.all
+  erb :index
+end
+
+get '/remembered' do
+  @listings = Listing.where(:status => 'remember').all
+  erb :index
+end
+
 get '/listing/:id/mls' do
   listing = Listing.find(params[:id])
   out = open(listing.url).read
@@ -82,6 +92,7 @@ __END__
       $('#map_canvas').css('height', document.height);
       $('#map_canvas').css('width', document.width - $('#mls_frame').width());
     }
+    window.onresize = resize;
     function wrap_links() {
       $('.listing_info .status').live('click', function() {
         $.ajax(this.href, {type: 'POST'});
