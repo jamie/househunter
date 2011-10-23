@@ -56,6 +56,7 @@ class Listing < ActiveRecord::Base
   end
   
   def map_icon_uri
+    return "" if status == 'ignore'
     return "/starpin.png" if status == 'remember'
 
     color = case

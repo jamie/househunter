@@ -9,8 +9,9 @@ get '/' do
   erb :index
 end
 
-get "/mls" do
-  out = open(params[:url]).read
+get '/listing/:id/mls' do
+  listing = Listing.find(params[:id])
+  out = open(listing.url).read
   out.sub!("<SCRIPT LANGUAGE='Javascript'>if (window != top) top.location.href = location.href;</SCRIPT>", "")
   out.sub!('"REALTOR">', '"REALTOR"><base href="http://www.realtor.ca/">')
   out
@@ -99,21 +100,21 @@ __END__
   </div>
   <div id="map_legend">
     <table>
-      <tr><td>     </td><td><img src="http://maps.google.com/mapfiles/ms/icons/pink.png"></td>  <td>$180k</td></tr>
+      <tr><td>     </td><td><img src="http://maps.google.com/mapfiles/ms/icons/pink.png">  </td><td>$180k</td></tr>
       <tr><td>$180k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/purple.png"></td><td>$210k</td></tr>
-      <tr><td>$210k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/blue.png"></td>  <td>$240k</td></tr>
-      <tr><td>$240k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/green.png"></td> <td>$270k</td></tr>
+      <tr><td>$210k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/blue.png">  </td><td>$240k</td></tr>
+      <tr><td>$240k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/green.png"> </td><td>$270k</td></tr>
       <tr><td>$270k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/yellow.png"></td><td>$300k</td></tr>
       <tr><td>$300k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/orange.png"></td><td>$330k</td></tr>
-      <tr><td>$330k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/red.png"></td>   <td>     </td></tr>
+      <tr><td>$330k</td><td><img src="http://maps.google.com/mapfiles/ms/icons/red.png">   </td><td>     </td></tr>
     </table>
   </div>
-  <iframe id="mls_frame" name="mls_frame">You need a new browser.</iframe>
+  <iframe id="mls_frame" name="mls_frame">You need a newer browser.</iframe>
 
   <% @listings.each do |listing| %>
     <div style="float: left; height: 200px; display: none;" id="listing_<%= listing.id %>" >
       <div class="listing_info">
-        <a href="/mls?url=<%= CGI.escape listing.url %>" target="mls_frame"><%= listing.address %></a><br>
+        <a href="listing/<%= listing.id %>/mls" target="mls_frame"><%= listing.address %></a><br>
         <%= listing.last_imported["OrganizationName"].join(',<br> ') %><br>
         <img class="photo" src="<%= listing.last_imported['PropertyLowResImagePath'] + listing.last_imported['PropertyLowResPhotos'].first.to_s %>"/>
         <strong>&nbsp; &nbsp; <%= listing.price %></strong><br>
@@ -124,7 +125,9 @@ __END__
         <% if listing.status != 'ignore' %>
           <a class="status" href="/listing/<%= listing.id %>/ignore">ignore</a>
         <% end %>
-        <% if listing.status == '' %>
+        <% if listing.status == 'remember' %>
+          <a class="status" href="/listing/<%= listing.id %>/new">unremember</a><br/>
+        <% else %>
           <a class="status" href="/listing/<%= listing.id %>/remember">remember</a><br/>
         <% end %>
         <%= listing.status %>
