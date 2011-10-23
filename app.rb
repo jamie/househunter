@@ -18,9 +18,10 @@ get '/listing/:id/mls' do
 end
 
 post '/listing/:id/:status' do
-  @listing = Listing.find(params[:id])
-  @listing.status = params[:status]
-  @listing.save
+  pass unless %w(new ignore remember).include? params[:status]
+  listing = Listing.find(params[:id])
+  listing.status = params[:status]
+  listing.save
 end
 
 __END__
@@ -38,7 +39,7 @@ __END__
     #map_legend { position: absolute; bottom: 10px; left: 10px; background: white; }
     #map_legend table { margin: 0; }
     #map_legend th, #map_legend td { padding: 0; margin: 0; }
-    .listing_info { width: 240px; }
+    .listing_info { width: 250px; }
     .photo { float: left; }
   </style>
 
@@ -114,7 +115,7 @@ __END__
   <% @listings.each do |listing| %>
     <div style="float: left; height: 200px; display: none;" id="listing_<%= listing.id %>" >
       <div class="listing_info">
-        <a href="listing/<%= listing.id %>/mls" target="mls_frame"><%= listing.address %></a><br>
+        <%= listing.mls %>, <a href="listing/<%= listing.id %>/mls" target="mls_frame"><%= listing.address %></a><br>
         <%= listing.last_imported["OrganizationName"].join(',<br> ') %><br>
         <img class="photo" src="<%= listing.last_imported['PropertyLowResImagePath'] + listing.last_imported['PropertyLowResPhotos'].first.to_s %>"/>
         <strong>&nbsp; &nbsp; <%= listing.price %></strong><br>
@@ -130,7 +131,6 @@ __END__
         <% else %>
           <a class="status" href="/listing/<%= listing.id %>/remember">remember</a><br/>
         <% end %>
-        <%= listing.status %>
       </div>
       <% "<p>#{listing.last_imported}</p>" %>
     </div>
