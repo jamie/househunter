@@ -5,6 +5,8 @@ gem "rackup"
 gem "activerecord"
 gem "sinatra-activerecord"
 
+gem "http"
+
 group :development do
   gem "sqlite3", "~> 1.4" # TODO: Unlock after rails 7.2/8.0?
   #  gem 'heroku'
