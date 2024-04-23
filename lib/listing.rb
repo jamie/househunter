@@ -75,4 +75,8 @@ class Listing < ActiveRecord::Base
     key = last_imported["PidKey"]
     "http://www.realtor.ca/propertyDetails.aspx?propertyId=#{id}&PidKey=#{key}"
   end
+
+  def tooltip_photo
+    last_imported.dig("Property", "Photo", 0, "MedResPath")
+  end
 end

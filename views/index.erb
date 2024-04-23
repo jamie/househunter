@@ -5,6 +5,7 @@
     <style type="text/css">
       body { margin: 0; padding: 0; }
       #map { width: 100vw; height: 100vh; }
+      .leaflet-popup-content .photo { width: 200px; }
       <%##mls_frame { position: absolute; top: 0; right: 0; height: 99%; flex: 0 0 500px; }
       #map_legend { position: absolute; bottom: 10px; left: 10px; background: white; }
       #map_legend table { margin: 0; }
@@ -22,15 +23,27 @@
 
     <script type="text/javascript">
     var map = L.map('map', {
-        center: [49.19, -123.969383],
-        zoom: 12
+      center: [49.19, -123.98],
+      zoom: 13
     });
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
+
+    var greenPin = L.icon({
+      iconUrl: 'http://maps.google.com/mapfiles/ms/icons/green.png',
+    })
+
     <% @listings.each do |listing| %>
-    L.marker([<%= listing.lat %>, <%= listing.lng %>]).addTo(map)
+    var marker = L.marker(
+      [<%= listing.lat %>, <%= listing.lng %>],
+      {icon: greenPin}
+    ).addTo(map)
+    marker.bindPopup(`
+      <img class="photo" src="<%= listing.tooltip_photo %>"/></br>
+      <strong>$<%= listing.price/1000 %>k</strong> - <%= listing.address %><br/>
+    `)
     <% end %>
     </script>
   </body>
