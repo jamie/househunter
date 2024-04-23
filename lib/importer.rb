@@ -4,17 +4,16 @@ class Importer
   URI = "https://api2.realtor.ca/Listing.svc/PropertySearch_Post"
 
   def do_import
+    page = 1
     1.times do |i| # loop do
-      page = i + 1
       response = http.post(URI, form: query_params(page))
       # TODO: rescue "HTTP::Error: Unknown MIME type: text/html (HTTP::Error)" when credentials expire
       results = response.parse["Results"]
-      pp results[0]
-      exit
       break if results.empty?
       results.each do |listing_json|
         Listing.import(listing_json)
       end
+      page += 1
     end
   end
 

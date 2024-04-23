@@ -5,8 +5,8 @@ class Hash
 end
 
 class Listing < ActiveRecord::Base
-  IGNORED_ATTRS = %w[PropertyImagePath PropertyLowResImagePath]
-  UNIMPORTANT_ATTRS = %w[PropertyImagePath PropertyLowResImagePath PropertyLowResPhotos Latitude Longitude OrganizationName]
+  IGNORED_ATTRS = %w[Individual Business TimeOnRealtor Tags]
+  UNIMPORTANT_ATTRS = IGNORED_ATTRS + %w[HasNewImageUpdate]
 
   def self.filtered
     where("status != ?", "ignore")
@@ -17,8 +17,7 @@ class Listing < ActiveRecord::Base
   end
 
   def self.import(attrs)
-    listing = where(mls: attrs["MLS"]).first
-    listing ||= create(mls: attrs["MLS"])
+    listing = find_or_create_by(external_id: attrs["Id"])
     listing.record(attrs)
     listing.import!
   end
@@ -48,31 +47,27 @@ class Listing < ActiveRecord::Base
 
   def import!
     a = last_imported
-    self.lat = a["Latitude"]
-    self.lng = a["Longitude"]
-    self.address = a["Address"].blank? ? "Unknown" : a["Address"]
-    self.price = a["Price"]
+    self.lat = a.dig("Property", "Address", "Latitude")
+    self.lng = a.dig("Property", "Address", "Longitude")
+    self.address = a.dig("Property", "Address", "AddressText").split("|").first
+    self.price = a.dig("Property", "Price").gsub(/[^0-9]/, "").to_i
     save
   end
 
   def map_icon_uri
     return "/starpin.png" if status == "remember"
 
-    color = if price_int < 180_000 then "pink"
-    elsif price_int < 210_000 then "purple"
-    elsif price_int < 240_000 then "blue"
-    elsif price_int < 270_000 then "green"
-    elsif price_int < 300_000 then "yellow"
-    elsif price_int < 330_000 then "orange"
+    color = if price < 180_000 then "pink"
+    elsif price < 210_000 then "purple"
+    elsif price < 240_000 then "blue"
+    elsif price < 270_000 then "green"
+    elsif price < 300_000 then "yellow"
+    elsif price < 330_000 then "orange"
     else
       "red"
     end
     style = ((imported_at > 20.hours.ago) ? "-dot" : "")
     "http://maps.google.com/mapfiles/ms/icons/#{color}#{style}.png"
-  end
-
-  def price_int
-    price.gsub(/[^0-9]/, "").to_i
   end
 
   def url
