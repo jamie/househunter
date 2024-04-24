@@ -5,9 +5,6 @@ class Hash
 end
 
 class Listing < ActiveRecord::Base
-  IGNORED_ATTRS = %w[Individual Business TimeOnRealtor Tags]
-  UNIMPORTANT_ATTRS = IGNORED_ATTRS + %w[HasNewImageUpdate]
-
   def self.filtered
     where("status != ?", "ignore")
   end
@@ -16,43 +13,13 @@ class Listing < ActiveRecord::Base
     where("updated_at > ?", 5.days.ago)
   end
 
-  def self.import(attrs)
-    listing = find_or_create_by(external_id: attrs["Id"])
-    listing.record(attrs)
-    listing.import!
-  end
-
-  def record(attrs)
-    return if last_imported == attrs
-    return if ((last_imported.diff attrs).keys - IGNORED_ATTRS).empty?
-    if json.blank?
-      print "*"
-      self.json = attrs.to_json
-      self.imported_at = Time.now
-    else
-      print "."
-      p(last_imported.diff(attrs))
-      p(attrs.diff(last_imported))
-      self.json = json + "\n" + attrs.to_json
-      if !((last_imported.diff attrs).keys - UNIMPORTANT_ATTRS).empty?
-        self.imported_at = Time.now
-      end
-    end
-    save
-  end
-
   def last_imported
     JSON.parse((json || "").split("\n").last || "{}")
   end
 
-  def import!
-    a = last_imported
-    self.lat = a.dig("Property", "Address", "Latitude")
-    self.lng = a.dig("Property", "Address", "Longitude")
-    self.address = a.dig("Property", "Address", "AddressText").split("|").first
-    self.price = a.dig("Property", "Price").gsub(/[^0-9]/, "").to_i
-    save
-  end
+  def bedrooms = last_imported.dig("Building", "Bedrooms")
+
+  def bathrooms = last_imported.dig("Building", "BathroomTotal")
 
   def map_icon_uri
     return "/starpin.png" if status == "remember"
