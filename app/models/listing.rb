@@ -7,6 +7,23 @@ class Listing < ActiveRecord::Base
     where("updated_at > ?", 5.days.ago)
   end
 
+  def self.price_spread
+    prices = Listing.pluck(:price)
+    sum = prices.sum(0.0)
+    size = prices.size
+    mean = sum / size
+    stddev = Math.sqrt(prices.map { |price| (price - mean)**2 }.sum / size)
+    [
+      0,
+      mean - 1 * stddev,
+      mean - 0.5 * stddev,
+      mean,
+      mean + 0.5 * stddev,
+      mean + 1 * stddev,
+      mean + 2 * stddev
+    ].map { |price| price.round(-4) } + [Float::INFINITY]
+  end
+
   def last_imported
     JSON.parse((json || "").split("\n").last || "{}")
   end
@@ -14,6 +31,11 @@ class Listing < ActiveRecord::Base
   def bedrooms = last_imported.dig("Building", "Bedrooms")
 
   def bathrooms = last_imported.dig("Building", "BathroomTotal")
+
+  def marker_icon(price_spread)
+    index = price_spread.index { |spread| price < spread }
+    "house#{index}"
+  end
 
   def last_update
     date = begin

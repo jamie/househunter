@@ -13,6 +13,10 @@ body {
     height: 12px;
     width: 12px;
 }
+.leaflet-marker-icon {
+    height: 20px;
+    width: 20px;
+}
 
 /* #mls_frame { position: absolute; top: 0; right: 0; height: 99%; flex: 0 0 500px; }
 #map_legend { position: absolute; bottom: 10px; left: 10px; background: white; }
