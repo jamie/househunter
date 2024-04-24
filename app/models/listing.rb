@@ -7,8 +7,12 @@ class Listing < ActiveRecord::Base
     where("updated_at > ?", 5.days.ago)
   end
 
+  def self.max_price(price)
+    price ? where("price < ?", price) : all
+  end
+
   def self.price_spread
-    prices = Listing.pluck(:price)
+    prices = all.pluck(:price)
     sum = prices.sum(0.0)
     size = prices.size
     mean = sum / size
@@ -20,7 +24,7 @@ class Listing < ActiveRecord::Base
       mean,
       mean + 0.5 * stddev,
       mean + 1 * stddev,
-      mean + 2 * stddev
+      mean + 1.5 * stddev
     ].map { |price| price.round(-4) } + [Float::INFINITY]
   end
 

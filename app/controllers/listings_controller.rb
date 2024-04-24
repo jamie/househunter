@@ -1,6 +1,7 @@
 class ListingsController < ApplicationController
   def index
-    @price_spread = Listing.price_spread
-    @listings = Listing.recent.filtered.all
+    relation = Listing.max_price(nil).filtered.recent
+    @price_spread = relation.price_spread
+    @listings = relation.all
   end
 end
