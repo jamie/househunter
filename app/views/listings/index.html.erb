@@ -22,7 +22,7 @@ var marker = L.marker(
 marker.bindPopup(`
   <img class="photo" src="<%= listing.tooltip_photo %>"/></br>
   <strong>$<%= listing.price/1000 %>k</strong> - <%= listing.address %><br/>
-  <img class="icon" src="bed.png"> <%= listing.bedrooms %> <img class="icon" src="bath.png"> <%= listing.bathrooms %>
+  <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %> <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %> - Updated <%= listing.last_update %>
 `)
 <% end %>
 </script>

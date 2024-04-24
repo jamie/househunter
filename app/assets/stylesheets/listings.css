@@ -10,8 +10,8 @@ body {
     width: 200px;
 }
 .leaflet-popup-content .icon {
-    height: 20px;
-    width: 20px;
+    height: 12px;
+    width: 12px;
 }
 
 /* #mls_frame { position: absolute; top: 0; right: 0; height: 99%; flex: 0 0 500px; }

@@ -15,6 +15,16 @@ class Listing < ActiveRecord::Base
 
   def bathrooms = last_imported.dig("Building", "BathroomTotal")
 
+  def last_update
+    date = begin
+      DateTime.parse(last_imported.dig("PriceChangeDateUTC"))
+    rescue
+      nil
+    end
+    date ||= created_at
+    date.strftime("%b %d")
+  end
+
   def map_icon_uri
     return "/starpin.png" if status == "remember"
 
