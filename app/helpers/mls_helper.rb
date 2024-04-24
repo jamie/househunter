@@ -1,0 +1,2 @@
+module MlsHelper
+end

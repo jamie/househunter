@@ -1,0 +1,2 @@
+class MlsController < ApplicationController
+end
