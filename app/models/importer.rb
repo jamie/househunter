@@ -17,6 +17,7 @@ class Importer
       end
       page += 1
     end
+    puts
   end
 
   def http
