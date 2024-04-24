@@ -4,11 +4,6 @@ require "sinatra"
 require "cgi"
 require "open-uri"
 
-get "/" do
-  @listings = Listing.recent.filtered.all
-  erb :index
-end
-
 get "/all" do
   @listings = Listing.recent.all
   erb :index
