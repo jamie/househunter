@@ -4,7 +4,7 @@ class Listing < ActiveRecord::Base
   end
 
   def self.recent
-    where("updated_at > ?", 5.days.ago)
+    where("imported_at > ?", 5.days.ago)
   end
 
   def self.max_price(price)

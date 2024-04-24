@@ -55,6 +55,7 @@ class Importer
 
   def import_listing(attrs)
     listing = Listing.find_or_create_by(external_id: attrs["Id"])
+    listing.touch(:imported_at)
 
     return if listing.last_imported == attrs
     return if (listing.last_imported.diff(attrs).keys - IGNORED_ATTRS).empty?
@@ -69,9 +70,6 @@ class Importer
       pp(attrs.diff(listing.last_imported))
       exit
       listing.json = listing.json + "\n" + attrs.to_json
-      if !((listing.last_imported.diff attrs).keys - UNIMPORTANT_ATTRS).empty?
-        listing.imported_at = Time.now
-      end
     end
 
     last = listing.last_imported
