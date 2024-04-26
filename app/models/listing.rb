@@ -36,6 +36,8 @@ class Listing < ActiveRecord::Base
 
   def bathrooms = last_imported.dig("Building", "BathroomTotal")
 
+  def external_url = "https://www.realtor.ca#{last_imported.dig("RelativeURLEn")}"
+
   def marker_icon(price_spread)
     index = price_spread.index { |spread| price < spread }
     "house#{index}"
