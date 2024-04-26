@@ -2,8 +2,26 @@ require "http"
 
 class Importer
   URI = "https://api2.realtor.ca/Listing.svc/PropertySearch_Post"
-  IGNORED_ATTRS = %w[Individual Business TimeOnRealtor Tags]
-  UNIMPORTANT_ATTRS = IGNORED_ATTRS + %w[HasNewImageUpdate]
+  IGNORED_ATTRS = %w[
+    Building.SizeInterior
+    HasNewImageUpdate HasOpenHouseUpdate
+    Individual[0].Emails[0]
+    Individual[0].Organization.Logo
+    Individual[0].Organization.PhotoLastupdate
+    Individual[1].Organization.Logo
+    Individual[1].Organization.PhotoLastupdate
+    Individual[2].Organization.Logo
+    Individual[2].Organization.PhotoLastupdate
+    Land.SizeTotal
+    ListingBoundary ListingGMT ListingTimeZone
+    OpenHouse OpenHouse[0] OpenHouseInsertDateUTC
+    Tags[0]
+    TimeOnRealtor
+  ]
+  UNIMPORTANT_ATTRS = IGNORED_ATTRS + %w[
+    HasPriceUpdate PriceChangeDateUTC
+    PhotoChangeDateUTC
+  ]
 
   def do_import
     page = 1
@@ -58,18 +76,14 @@ class Importer
     listing.touch(:imported_at)
 
     return if listing.last_imported == attrs
-    return if (listing.last_imported.diff(attrs).keys - IGNORED_ATTRS).empty?
 
-    if listing.json.blank?
-      print "*"
-      listing.json = attrs.to_json
-      listing.imported_at = Time.now
-    else
-      print "."
-      pp(listing.last_imported.diff(attrs))
-      pp(attrs.diff(listing.last_imported))
-      exit
-      listing.json = listing.json + "\n" + attrs.to_json
+    diff_keys = Hashdiff.diff(listing.last_imported, attrs).map { _1[1] }.compact - IGNORED_ATTRS
+    return if diff_keys.empty?
+
+    diff_keys = Hashdiff.diff(listing.last_imported, attrs).map { _1[1] }.compact - UNIMPORTANT_ATTRS
+    if diff_keys.any?
+      listing.imported_at = Time.now # Indicates a significant change
+      listing.json = [listing.json, attrs.to_json].compact.join("\n")
     end
 
     last = listing.last_imported

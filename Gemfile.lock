@@ -108,6 +108,7 @@ GEM
       rake
     globalid (1.2.1)
       activesupport (>= 6.1)
+    hashdiff (1.1.0)
     http (5.2.0)
       addressable (~> 2.8)
       base64 (~> 0.1)
@@ -268,6 +269,7 @@ DEPENDENCIES
   bootsnap
   capybara
   debug
+  hashdiff
   http
   importmap-rails
   jbuilder
