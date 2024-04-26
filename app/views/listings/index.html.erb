@@ -1,4 +1,10 @@
-<div id="map">&nbsp;</div>
+<div id="map_legend">
+  <% 7.times do |i| %>
+    <%= number_to_currency(@price_spread[i]/1000, precision: 0) %>k
+    <%= image_tag("house#{i+1}") %>
+  <% end %>
+</div>
+<div id="map"></div>
 
 <script type="text/javascript">
   var map = L.map('map', {

@@ -21,8 +21,21 @@ body {
     }
 }
 
+#map_legend {
+    position: absolute;
+    z-index: 800; /* compare with Leaflet z-index https://leafletjs.com/reference.html#map-pane */
+    bottom: 10px;
+    left: 10px;
+    background: #eee;
+    border: 2px solid #555;
+    padding: 5px;
+    img {
+        height: 12px;
+        width: 12px;
+    }
+}
+
 /* #mls_frame { position: absolute; top: 0; right: 0; height: 99%; flex: 0 0 500px; }
-#map_legend { position: absolute; bottom: 10px; left: 10px; background: white; }
 #map_legend table { margin: 0; }
 #map_legend th, #map_legend td { padding: 0; margin: 0; }
 .listing_info { width: 250px; }
