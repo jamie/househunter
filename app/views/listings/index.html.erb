@@ -1,34 +1,34 @@
 <div id="map">&nbsp;</div>
 
 <script type="text/javascript">
-var map = L.map('map', {
-  center: [49.19, -123.98],
-  zoom: 13
-});
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+  var map = L.map('map', {
+    center: [49.19, -123.98],
+    zoom: 13
+  });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
 
-var marker_icons = {
-  <%= leaflet_icon_definition("house1") %>,
-  <%= leaflet_icon_definition("house2") %>,
-  <%= leaflet_icon_definition("house3") %>,
-  <%= leaflet_icon_definition("house4") %>,
-  <%= leaflet_icon_definition("house5") %>,
-  <%= leaflet_icon_definition("house6") %>,
-  <%= leaflet_icon_definition("house7") %>
-}
+  var marker_icons = {
+    <% 7.times do |i| j = i + 1 %>
+      house<%= j %>: L.icon({
+        iconUrl: '<%= image_path("house#{j}") %>',
+        iconSize: [20,20],
+        iconAnchor: [10,10]
+      }),
+    <% end %>
+  }
 
-<% @listings.each do |listing| %>
-var marker = L.marker(
-  [<%= listing.lat %>, <%= listing.lng %>],
-  {icon: marker_icons.<%= listing.marker_icon(@price_spread) %>}
-).addTo(map)
-marker.bindPopup(`
-  <img class="photo" src="<%= listing.tooltip_photo %>"/></br>
-  <strong>$<%= listing.price/1000 %>k</strong> - <%= listing.address %><br/>
-  <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %> <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %> - Updated <%= listing.last_update %>
-`)
-<% end %>
+  <% @listings.each do |listing| %>
+    var marker = L.marker(
+      [<%= listing.lat %>, <%= listing.lng %>],
+      {icon: marker_icons.<%= listing.marker_icon(@price_spread) %>}
+    ).addTo(map)
+    marker.bindPopup(`
+      <a target="_blank" rel="noreferrer noopener" href="<%= listing.external_url %>"><img class="photo" src="<%= listing.tooltip_photo %>"/></a></br>
+      <strong>$<%= listing.price/1000 %>k</strong> - <%= listing.address %><br/>
+      <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %> <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %> - Updated <%= listing.last_update %>
+    `)
+  <% end %>
 </script>
