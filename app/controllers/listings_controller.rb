@@ -2,7 +2,7 @@ class ListingsController < ApplicationController
   skip_forgery_protection
 
   def index
-    relation = Listing.max_price(nil).filtered.recent
+    relation = Listing.min_price(params[:min_price]).max_price(params[:max_price]).filtered.recent
     @price_spread = relation.price_spread
     @listings = relation.all
 

@@ -7,8 +7,12 @@ class Listing < ActiveRecord::Base
     where("imported_at > ?", 5.days.ago)
   end
 
+  def self.min_price(price)
+    price.presence ? where("price > ?", price) : all
+  end
+
   def self.max_price(price)
-    price ? where("price < ?", price) : all
+    price.presence ? where("price < ?", price) : all
   end
 
   def self.price_spread
