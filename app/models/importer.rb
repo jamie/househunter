@@ -34,6 +34,7 @@ class Importer
         import_listing(listing_json)
       end
       page += 1
+      print "/"
     end
     puts
   end
