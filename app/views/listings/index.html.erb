@@ -1,12 +1,24 @@
 <div id="map_legend">
-  <% 7.times do |i| %>
-    <%= number_to_currency(@price_spread[i]/1000, precision: 0) %>k
-    <%= image_tag("house#{i+1}") %>
-  <% end %>
+  <div id="map_legend_prices"></div>
+  <range-selector id="priceRange" min-range="0" max-range="<%= @listings.map(&:price).max.round(-6) %>" step-range="10000" number-of-legend-items-to-show="5" />
 </div>
 <div id="map"></div>
 
 <script type="text/javascript">
+  // range-selector hook
+  window.addEventListener('range-changed', (e) => {
+  console.log(e.detail)
+    let minValue = Math.max(Math.round(e.detail.minRangeValue / 10000) * 10000, 1)
+    let maxValue = Math.round(e.detail.maxRangeValue / 10000) * 10000
+
+    document.dispatchEvent(new CustomEvent('range-set', {detail: {sliderId: e.detail.sliderId, minValue: minValue, maxValue: maxValue}}))
+
+    var script = document.createElement('script')
+    script.src = `/listings.js?min_price=${minValue}&max_price=${maxValue}`
+    document.body.appendChild(script)
+  })
+
+  // Map initialization
   var map = L.map('map', {
     center: [49.19, -123.98],
     zoom: 13
@@ -16,6 +28,7 @@
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
+  var markers = []
   var marker_icons = {
     <% 7.times do |i| j = i + 1 %>
       house<%= j %>: L.icon({
@@ -25,16 +38,5 @@
       }),
     <% end %>
   }
-
-  <% @listings.each do |listing| %>
-    var marker = L.marker(
-      [<%= listing.lat %>, <%= listing.lng %>],
-      {icon: marker_icons.<%= listing.marker_icon(@price_spread) %>}
-    ).addTo(map)
-    marker.bindPopup(`
-      <a target="_blank" rel="noreferrer noopener" href="<%= listing.external_url %>"><img class="photo" src="<%= listing.tooltip_photo %>"/></a></br>
-      <strong>$<%= listing.price/1000 %>k</strong> - <%= listing.address %><br/>
-      <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %> <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %> - Updated <%= listing.last_update %>
-    `)
-  <% end %>
 </script>
+<script src="/listings.js" />

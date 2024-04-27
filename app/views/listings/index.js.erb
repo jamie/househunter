@@ -1,0 +1,23 @@
+// Reset markers, then add new ones
+markers.forEach((m) => m.remove())
+markers = []
+console.log("Listings: ", <%= @listings.size %>)
+<% @listings.each do |listing| %>
+  var marker = L.marker(
+    [<%= listing.lat %>, <%= listing.lng %>],
+    {icon: marker_icons.<%= listing.marker_icon(@price_spread) %>}
+  ).addTo(map)
+  marker.bindPopup(`
+    <a target="_blank" rel="noreferrer noopener" href="<%= listing.external_url %>"><img class="photo" src="<%= listing.tooltip_photo %>"/></a></br>
+    <strong>$<%= listing.price/1000 %>k</strong> - <%= listing.address %><br/>
+    <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %> <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %> - Updated <%= listing.last_update %>
+  `)
+  markers.push(marker)
+<% end %>
+
+document.getElementById('map_legend_prices').innerHTML = `
+<% 7.times do |i| %>
+  <%= number_to_currency(@price_spread[i]/1000, precision: 0) %>k
+  <%= image_tag("house#{i+1}") %>
+<% end %>
+`
