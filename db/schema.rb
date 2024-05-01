@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2011_10_15_182835) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_01_152918) do
   create_table "listings", force: :cascade do |t|
     t.integer "external_id"
     t.string "status", default: ""
@@ -22,6 +22,7 @@ ActiveRecord::Schema[7.1].define(version: 2011_10_15_182835) do
     t.datetime "imported_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "starred", default: false
   end
 
 end

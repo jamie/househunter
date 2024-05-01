@@ -44,8 +44,9 @@ class Listing < ActiveRecord::Base
 
   def marker_icon(price_spread)
     index = price_spread.index { |spread| price < spread }
-    "house#{index}"
-    if created_at > 7.days.ago
+    if starred?
+      "star#{index}"
+    elsif created_at > 7.days.ago
       "newhouse#{index}"
     else
       "house#{index}"
