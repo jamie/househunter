@@ -56,7 +56,6 @@ class Importer
       LatitudeMin: 49.03,
       LongitudeMin: -124.08,
       Sort: "6-D",
-      GeoIds: "g30_c0xzg2er",
       PropertyTypeGroupID: 1,
       TransactionTypeId: 2,
       PropertySearchTypeId: 0,
@@ -83,6 +82,7 @@ class Importer
 
     diff_keys = Hashdiff.diff(listing.last_imported, attrs).map { _1[1] }.compact - UNIMPORTANT_ATTRS
     if diff_keys.any?
+      print "."
       listing.imported_at = Time.now # Indicates a significant change
       listing.json = [listing.json, attrs.to_json].compact.join("\n")
     end
