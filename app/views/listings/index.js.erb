@@ -17,7 +17,9 @@ console.log("Listings: ", <%= @listings.size %>)
 
 document.getElementById('map_legend_prices').innerHTML = `
 <% 7.times do |i| %>
+  <% if @price_spread[i] > 0 %>
   <%= number_to_currency(@price_spread[i]/1000, precision: 0) %>k
+  <% end %>
   <%= image_tag("house#{i+1}") %>
 <% end %>
 `

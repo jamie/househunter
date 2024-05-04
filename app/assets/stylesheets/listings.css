@@ -22,6 +22,7 @@ body {
 }
 
 #map_legend {
+    width: 500px;
     position: absolute;
     z-index: 800; /* compare with Leaflet z-index https://leafletjs.com/reference.html#map-pane */
     bottom: 10px;
@@ -32,6 +33,46 @@ body {
     img {
         height: 12px;
         width: 12px;
+    }
+
+    #map_legend_prices {
+        text-align: center;
+    }
+
+    .double-ended-range {
+        position: relative;
+        input[type="range"] {
+            width: 100%;
+            margin: 0;
+        }
+
+        datalist {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            writing-mode: vertical-lr;
+            width: 100%;
+            option {
+                padding: 0;
+            }
+        }
+
+        /* Only compatible with firefox atm, see https://stackoverflow.com/questions/4753946/html-slider-with-two-inputs-possible */
+        @-moz-document url-prefix() {
+            input[type="range"]:nth-child(1) {
+                position: relative;
+                top: 0 !important;
+                overflow: visible !important;
+                height: 0;
+                z-index: 1;
+            }
+            input[type="range"]:nth-child(2) {
+                position: relative;
+                top: -14px !important;
+                overflow: visible !important;
+                height: 16px;
+            }
+        }
     }
 }
 

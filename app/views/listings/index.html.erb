@@ -1,20 +1,52 @@
 <div id="map_legend">
   <div id="map_legend_prices"></div>
-  <range-selector id="priceRange" min-range="0" max-range="<%= @listings.map(&:price).max.round(-6) %>" step-range="10000" number-of-legend-items-to-show="5" />
+
+  <div class="double-ended-range">
+    <input type="range" id="min_price" name="min_price" list="price_values" min="0" max="<%= ListingsController::UNLIMITED_PRICE %>" step="50000" value="<%= @min_price %>" />
+    <input type="range" id="max_price" name="max_price" list="price_values" min="0" max="<%= ListingsController::UNLIMITED_PRICE %>" step="50000" value="<%= @max_price %>" />
+
+    <datalist id="price_values">
+      <option value="0" label="0" />
+      <option value="250000" label="250k" />
+      <option value="500000" label="500k" />
+      <option value="750000" label="750k" />
+      <option value="1000000" label="1M" />
+      <option value="1250000" label="1.25M" />
+      <option value="1500000" label="1.5M" />
+      <option value="1750000" label="1.75M" />
+      <option value="2000000" label="2M" />
+      <option value="<%= ListingsController::UNLIMITED_PRICE %>" label="No Limit" />
+    </datalist>
+  </div>
 </div>
 <div id="map"></div>
 
 <script type="text/javascript">
-  // range-selector hook
-  window.addEventListener('range-changed', (e) => {
-  console.log(e.detail)
-    let minValue = Math.max(Math.round(e.detail.minRangeValue / 10000) * 10000, 1)
-    let maxValue = Math.round(e.detail.maxRangeValue / 10000) * 10000
+  // Prevent price selectors from overlapping
+  document.getElementById('min_price').addEventListener('input', (e) => {
+    let maxValue = document.getElementById('max_price').value
+    if (parseInt(e.target.value) >= parseInt(maxValue)) {
+      document.getElementById('min_price').value = parseInt(maxValue) - 50000
+    }
+  })
+  document.getElementById('max_price').addEventListener('input', (e) => {
+    let minValue = document.getElementById('min_price').value
+    if (parseInt(e.target.value) <= parseInt(minValue)) {
+      document.getElementById('max_price').value = parseInt(minValue) + 50000
+    }
+  })
 
-    document.dispatchEvent(new CustomEvent('range-set', {detail: {sliderId: e.detail.sliderId, minValue: minValue, maxValue: maxValue}}))
-
+  // Submit price ranges on change
+  document.getElementById('min_price').addEventListener('change', (e) => {
+    let minPrice = e.target.value
     var script = document.createElement('script')
-    script.src = `/listings.js?min_price=${minValue}&max_price=${maxValue}`
+    script.src = `/listings.js?min_price=${minPrice}`
+    document.body.appendChild(script)
+  })
+  document.getElementById('max_price').addEventListener('change', (e) => {
+    let maxPrice = e.target.value
+    var script = document.createElement('script')
+    script.src = `/listings.js?max_price=${maxPrice}`
     document.body.appendChild(script)
   })
 
