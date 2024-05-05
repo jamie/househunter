@@ -25,6 +25,9 @@ class ListingsController < ApplicationController
   private
 
   def import_listings
-    ImportJob.perform_later if Listing.maximum(:created_at) < 8.hours.ago
+    return if Listing.maximum(:created_at) > 8.hours.ago
+
+    flash.now[:notice] = "Updating properties..."
+    ImportJob.perform_later
   end
 end
