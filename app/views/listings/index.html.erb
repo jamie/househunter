@@ -18,6 +18,11 @@
       <option value="<%= ListingsController::UNLIMITED_PRICE %>" label="No Limit" />
     </datalist>
   </div>
+
+  <div>
+    <%= check_box_tag "new_listings", 1, @new_listings %>
+    <%= label_tag "new_listings", "New Listings" %>
+  </div>
 </div>
 <div id="map"></div>
 
@@ -47,6 +52,14 @@
     let maxPrice = e.target.value
     var script = document.createElement('script')
     script.src = `/listings.js?max_price=${maxPrice}`
+    document.body.appendChild(script)
+  })
+
+  // Submit new listings on change
+  document.getElementById('new_listings').addEventListener('change', (e) => {
+    let new_listings = e.target.checked
+    var script = document.createElement('script')
+    script.src = `/listings.js?new_listings=${new_listings}`
     document.body.appendChild(script)
   })
 

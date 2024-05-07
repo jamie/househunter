@@ -5,14 +5,21 @@ class ListingsController < ApplicationController
 
   before_action :import_listings, only: :index
 
-  def index
+  before_action do
     session[:min_price] = params[:min_price] if params[:min_price].present?
     session[:max_price] = params[:max_price] if params[:max_price].present?
 
     @min_price = session[:min_price] || 0
     @max_price = session[:max_price] || UNLIMITED_PRICE
+  end
 
-    relation = Listing.min_price(@min_price).max_price(@max_price).filtered.recent
+  before_action do
+    session[:new_listings] = params[:new_listings] if params[:new_listings].present?
+    @new_listings = ActiveModel::Type::Boolean.new.cast(session[:new_listings])
+  end
+
+  def index
+    relation = Listing.price_range(@min_price, @max_price).filtered.recent(@new_listings ? 5 : 60)
     @price_spread = relation.price_spread
     @listings = relation.all
 

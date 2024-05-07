@@ -1,19 +1,13 @@
 class Listing < ActiveRecord::Base
-  def self.filtered
-    where("status != ?", "ignore")
-  end
+  def self.filtered = where("status != ?", "ignore")
 
-  def self.recent
-    where("imported_at > ?", 5.days.ago)
-  end
+  def self.recent(n = 5) = where("created_at > ?", n.days.ago)
 
-  def self.min_price(price)
-    price.presence ? where("price > ?", price) : all
-  end
+  def self.min_price(price) = price.presence ? where("price > ?", price) : all
 
-  def self.max_price(price)
-    price.presence ? where("price < ?", price) : all
-  end
+  def self.max_price(price) = price.presence ? where("price < ?", price) : all
+
+  def self.price_range(min_price, max_price) = min_price(min_price).max_price(max_price)
 
   def self.price_spread
     prices = all.pluck(:price)
@@ -46,7 +40,7 @@ class Listing < ActiveRecord::Base
     index = price_spread.index { |spread| price < spread }
     if starred?
       "star#{index}"
-    elsif created_at > 7.days.ago
+    elsif created_at > 2.days.ago
       "newhouse#{index}"
     else
       "house#{index}"
