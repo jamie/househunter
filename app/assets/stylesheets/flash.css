@@ -1,0 +1,37 @@
+#flash {
+    position: absolute;
+    z-index: 1000;
+    top: 10px;
+    left: calc(50vw - 200px);
+    width: 400px;
+    margin: auto;
+
+    animation: flashAnimation 5s forwards;
+
+    div {
+        text-align: middle;
+        padding: 1em;
+        border-radius: 1em;
+    }
+
+    .alert {
+        background-color: #f77;
+        border-color: #c00;
+    }
+    .notice {
+        border: 2px solid;
+        background-color: #7f7;
+        border-color: #0c0;
+    }
+}
+@keyframes flashAnimation {
+    0% {
+        opacity: 1;
+    }
+    70% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
