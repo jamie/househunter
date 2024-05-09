@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_01_152918) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_09_013743) do
+  create_table "import_listings", force: :cascade do |t|
+    t.integer "import_id"
+    t.integer "listing_id"
+    t.text "json", limit: 65535
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["import_id"], name: "index_import_listings_on_import_id"
+    t.index ["listing_id"], name: "index_import_listings_on_listing_id"
+  end
+
+  create_table "imports", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "listings", force: :cascade do |t|
     t.integer "external_id"
     t.string "status", default: ""
@@ -18,7 +33,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_152918) do
     t.string "lng"
     t.string "address"
     t.integer "price"
-    t.text "json", default: ""
     t.datetime "imported_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

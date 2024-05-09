@@ -1,4 +1,6 @@
 class Listing < ActiveRecord::Base
+  has_many :import_listings, dependent: :destroy
+
   def self.filtered = where("status != ?", "ignore")
 
   def self.recent(n = 5) = where("created_at > ?", n.days.ago)
@@ -26,9 +28,7 @@ class Listing < ActiveRecord::Base
     ].map { |price| price.round(-4) } + [Float::INFINITY]
   end
 
-  def last_imported
-    JSON.parse((json || "").split("\n").last || "{}")
-  end
+  def last_imported = import_listings.last&.json || {}
 
   def bedrooms = last_imported.dig("Building", "Bedrooms")
 

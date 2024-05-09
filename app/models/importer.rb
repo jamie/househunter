@@ -25,18 +25,20 @@ class Importer
 
   def do_import
     page = 1
+    updated = 0
     loop do
       response = http.post(URI, form: query_params(page))
       # TODO: rescue "HTTP::Error: Unknown MIME type: text/html (HTTP::Error)" when credentials expire
       results = response.parse["Results"]
       break if results.empty?
       results.each do |listing_json|
-        import_listing(listing_json)
+        updated += 1 if import_listing(listing_json)
       end
       page += 1
       print "/"
     end
     puts
+    `say "imported #{updated} listings"`
   end
 
   def http
@@ -59,11 +61,8 @@ class Importer
       PropertyTypeGroupID: 1,
       TransactionTypeId: 2,
       PropertySearchTypeId: 0,
-      BedRange: "2-0",
-      BathRange: "2-0",
-      Currency: "CAD",
       IncludeHiddenListings: false,
-      RecordsPerPage: 12,
+      RecordsPerPage: 50,
       ApplicationId: 1,
       CultureId: 1,
       Version: 7.0,
@@ -84,7 +83,7 @@ class Importer
     if diff_keys.any?
       print "."
       listing.imported_at = Time.now # Indicates a significant change
-      listing.json = [listing.json, attrs.to_json].compact.join("\n")
+      listing.import_listings.create(json: attrs)
     end
 
     last = listing.last_imported
@@ -92,6 +91,9 @@ class Importer
     listing.lng = last.dig("Property", "Address", "Longitude")
     listing.address = last.dig("Property", "Address", "AddressText").split("|").first
     listing.price = last.dig("Property", "Price").gsub(/[^0-9]/, "").to_i
+    # TODO: Beds, baths
     listing.save
+
+    true
   end
 end
