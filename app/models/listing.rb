@@ -49,15 +49,7 @@ class Listing < ActiveRecord::Base
     end
   end
 
-  def last_update
-    date = begin
-      DateTime.parse(last_imported.dig("PriceChangeDateUTC"))
-    rescue
-      nil
-    end
-    date ||= created_at
-    date.strftime("%b %d")
-  end
+  def last_update = imported_at.strftime("%b %d")
 
   def map_icon_uri
     return "/starpin.png" if status == "remember"

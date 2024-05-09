@@ -91,7 +91,7 @@ class Importer
     listing.lng = last.dig("Property", "Address", "Longitude")
     listing.address = last.dig("Property", "Address", "AddressText").split("|").first
     listing.price = last.dig("Property", "Price").gsub(/[^0-9]/, "").to_i
-    # TODO: Beds, baths
+    # TODO: Beds, baths, url
     listing.save
 
     true
