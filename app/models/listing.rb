@@ -51,22 +51,6 @@ class Listing < ActiveRecord::Base
 
   def last_update = imported_at.strftime("%b %d")
 
-  def map_icon_uri
-    return "/starpin.png" if status == "remember"
-
-    color = if price < 180_000 then "pink"
-    elsif price < 210_000 then "purple"
-    elsif price < 240_000 then "blue"
-    elsif price < 270_000 then "green"
-    elsif price < 300_000 then "yellow"
-    elsif price < 330_000 then "orange"
-    else
-      "red"
-    end
-    style = ((imported_at > 20.hours.ago) ? "-dot" : "")
-    "http://maps.google.com/mapfiles/ms/icons/#{color}#{style}.png"
-  end
-
   def url
     id = last_imported["PropertyID"]
     key = last_imported["PidKey"]
