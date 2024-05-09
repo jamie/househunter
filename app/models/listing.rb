@@ -37,9 +37,9 @@ class Listing < ActiveRecord::Base
     if starred?
       "star#{index}"
     elsif imported_at > 12.hours.ago # TODO: Most recent import
-      "house#{index}gs"
+      "house#{index}new"
     elsif imported_at > 3.days.ago
-      "house#{index}ss"
+      "house#{index}recent"
     else
       "house#{index}"
     end
