@@ -82,18 +82,10 @@ class Importer
     diff_keys = Hashdiff.diff(listing.last_imported, attrs).map { _1[1] }.compact - UNIMPORTANT_ATTRS
     if diff_keys.any?
       print "."
-      listing.imported_at = Time.now # Indicates a significant change
       listing.import_listings.create(json: attrs)
     end
 
-    last = listing.last_imported
-    listing.lat = last.dig("Property", "Address", "Latitude")
-    listing.lng = last.dig("Property", "Address", "Longitude")
-    listing.address = last.dig("Property", "Address", "AddressText").split("|").first
-    listing.price = last.dig("Property", "Price").gsub(/[^0-9]/, "").to_i
-    # TODO: Beds, baths, url
-    listing.save
-
+    listing.sync_last_import!
     true
   end
 end

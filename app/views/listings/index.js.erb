@@ -1,7 +1,6 @@
 // Reset markers, then add new ones
 markers.forEach((m) => m.remove())
 markers = []
-console.log("Listings: ", <%= @listings.size %>)
 <% @listings.each do |listing| %>
   var marker = L.marker(
     [<%= listing.lat %>, <%= listing.lng %>],
@@ -10,10 +9,13 @@ console.log("Listings: ", <%= @listings.size %>)
   marker.bindPopup(`
     <a target="_blank" rel="noreferrer noopener" href="<%= listing.external_url %>"><img class="photo" src="<%= listing.tooltip_photo %>"/></a></br>
     <strong>$<%= listing.price/1000 %>k</strong> - <%= listing.address %><br/>
-    <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %> <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %> - Updated <%= listing.last_update %>
+    <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %>
+    <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %>
+    - Updated <%= listing.last_update %>
   `)
   markers.push(marker)
 <% end %>
+console.log("Listings: ", <%= @listings.size %>)
 
 document.getElementById('map_legend_prices').innerHTML = `
 <% 7.times do |i| %>

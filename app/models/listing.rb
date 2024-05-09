@@ -30,34 +30,35 @@ class Listing < ActiveRecord::Base
 
   def last_imported = import_listings.last&.json || {}
 
-  def bedrooms = last_imported.dig("Building", "Bedrooms")
-
-  def bathrooms = last_imported.dig("Building", "BathroomTotal")
-
-  def external_url = "https://www.realtor.ca#{last_imported.dig("RelativeURLEn")}"
+  def last_update = imported_at.strftime("%b %d")
 
   def marker_icon(price_spread)
     index = price_spread.index { |spread| price < spread }
     if starred?
       "star#{index}"
-    elsif created_at > 12.hours.ago # TODO: Most recent import
+    elsif imported_at > 12.hours.ago # TODO: Most recent import
       "house#{index}gs"
-    elsif created_at > 3.days.ago
+    elsif imported_at > 3.days.ago
       "house#{index}ss"
     else
       "house#{index}"
     end
   end
 
-  def last_update = imported_at.strftime("%b %d")
+  def sync_last_import!
+    last = last_imported
+    self.lat = last.dig("Property", "Address", "Latitude")
+    self.lng = last.dig("Property", "Address", "Longitude")
+    self.address = last.dig("Property", "Address", "AddressText").to_s.split("|").first
+    self.price = last.dig("Property", "Price").to_s.gsub(/[^0-9]/, "").to_i
+    self.bedrooms = last.dig("Building", "Bedrooms")
+    self.bathrooms = last.dig("Building", "BathroomTotal")
+    self.external_url = "https://www.realtor.ca#{last_imported.dig("RelativeURLEn")}"
+    self.tooltip_photo = last.dig("Property", "Photo", 0, "MedResPath")
 
-  def url
-    id = last_imported["PropertyID"]
-    key = last_imported["PidKey"]
-    "http://www.realtor.ca/propertyDetails.aspx?propertyId=#{id}&PidKey=#{key}"
-  end
-
-  def tooltip_photo
-    last_imported.dig("Property", "Photo", 0, "MedResPath")
+    if changed?
+      self.imported_at = Time.now
+      save
+    end
   end
 end

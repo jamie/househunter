@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_09_013743) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_09_014514) do
   create_table "import_listings", force: :cascade do |t|
     t.integer "import_id"
     t.integer "listing_id"
@@ -37,6 +37,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_09_013743) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "starred", default: false
+    t.integer "bedrooms"
+    t.integer "bathrooms"
+    t.string "external_url"
+    t.string "tooltip_photo"
   end
 
 end
