@@ -32,11 +32,11 @@ class Listing < ActiveRecord::Base
 
   def last_update = imported_at.strftime("%b %d")
 
-  def marker_icon(price_spread)
+  def marker_icon(price_spread, last_import)
     index = price_spread.index { |spread| price < spread }
     if starred?
       "star#{index}"
-    elsif imported_at > 12.hours.ago # TODO: Most recent import
+    elsif imported_at == last_import
       "house#{index}new"
     elsif imported_at > 3.days.ago
       "house#{index}recent"

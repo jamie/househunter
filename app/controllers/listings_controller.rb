@@ -18,6 +18,10 @@ class ListingsController < ApplicationController
     @new_listings = ActiveModel::Type::Boolean.new.cast(session[:new_listings])
   end
 
+  before_action do
+    @latest_import = Import.maximum(:imported_at)
+  end
+
   def index
     relation = Listing.price_range(@min_price, @max_price).filtered.recent(@new_listings ? 5 : 60)
     @price_spread = relation.price_spread

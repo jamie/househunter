@@ -4,7 +4,7 @@ markers = []
 <% @listings.each do |listing| %>
   var marker = L.marker(
     [<%= listing.lat %>, <%= listing.lng %>],
-    {icon: marker_icons.<%= listing.marker_icon(@price_spread) %>}
+    {icon: marker_icons.<%= listing.marker_icon(@price_spread, @latest_import) %>}
   ).addTo(map)
   marker.bindPopup(`
     <a target="_blank" rel="noreferrer noopener" href="<%= listing.external_url %>"><img class="photo" src="<%= listing.tooltip_photo %>"/></a></br>
