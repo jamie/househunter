@@ -10,20 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_09_014514) do
-  create_table "import_listings", force: :cascade do |t|
+ActiveRecord::Schema[7.1].define(version: 2024_05_10_045735) do
+  create_table "imports", force: :cascade do |t|
     t.integer "import_id"
     t.integer "listing_id"
     t.text "json", limit: 65535
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["import_id"], name: "index_import_listings_on_import_id"
-    t.index ["listing_id"], name: "index_import_listings_on_listing_id"
-  end
-
-  create_table "imports", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.index ["import_id"], name: "index_imports_on_import_id"
+    t.index ["listing_id"], name: "index_imports_on_listing_id"
   end
 
   create_table "listings", force: :cascade do |t|

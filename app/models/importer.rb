@@ -2,37 +2,27 @@ require "http"
 
 class Importer
   URI = "https://api2.realtor.ca/Listing.svc/PropertySearch_Post"
-  IGNORED_ATTRS = %w[
-    Building.SizeInterior
-    HasNewImageUpdate HasOpenHouseUpdate
-    Individual[0].Emails[0]
-    Individual[0].Organization.Logo
-    Individual[0].Organization.PhotoLastupdate
-    Individual[1].Organization.Logo
-    Individual[1].Organization.PhotoLastupdate
-    Individual[2].Organization.Logo
-    Individual[2].Organization.PhotoLastupdate
-    Land.SizeTotal
-    ListingBoundary ListingGMT ListingTimeZone
-    OpenHouse OpenHouse[0] OpenHouseInsertDateUTC
-    Tags[0]
-    TimeOnRealtor
-  ]
-  UNIMPORTANT_ATTRS = IGNORED_ATTRS + %w[
-    HasPriceUpdate PriceChangeDateUTC
-    PhotoChangeDateUTC
-  ]
 
   def do_import
     page = 1
     updated = 0
+    import_time = Time.current
+
     loop do
       response = http.post(URI, form: query_params(page))
       # TODO: rescue "HTTP::Error: Unknown MIME type: text/html (HTTP::Error)" when credentials expire
       results = response.parse["Results"]
       break if results.empty?
-      results.each do |listing_json|
-        updated += 1 if import_listing(listing_json)
+      results.each do |attrs|
+        listing = Listing.find_or_create_by(external_id: attrs["Id"])
+        listing.sync_with(attrs)
+        if listing.changed?
+          listing.imported_at = import_time
+          listing.save
+          listing.imports.create(json: attrs)
+          print "."
+          updated += 1
+        end
       end
       page += 1
       print "/"
@@ -52,33 +42,18 @@ class Importer
 
   def query_params(page = 1)
     {
-      ZoomLevel: 12,
       LatitudeMax: 49.33,
       LongitudeMax: -123.85,
       LatitudeMin: 49.03,
       LongitudeMin: -124.08,
-      Sort: "6-D",
-      PropertyTypeGroupID: 1,
+      PropertyTypeGroupID: 1, # Residential
       TransactionTypeId: 2,
       PropertySearchTypeId: 0,
-      IncludeHiddenListings: false,
       RecordsPerPage: 50,
       ApplicationId: 1,
       CultureId: 1,
       Version: 7.0,
       CurrentPage: page
     }
-  end
-
-  def import_listing(attrs)
-    listing = Listing.find_or_create_by(external_id: attrs["Id"])
-    listing.sync_with(attrs)
-    if listing.changed?
-      listing.imported_at = Time.current
-      listing.save
-      listing.import_listings.create(json: attrs)
-      print "."
-      true
-    end
   end
 end

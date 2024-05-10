@@ -1,5 +1,5 @@
 class Listing < ActiveRecord::Base
-  has_many :import_listings, dependent: :destroy
+  has_many :imports, dependent: :destroy
 
   def self.filtered = where("status != ?", "ignore")
 
