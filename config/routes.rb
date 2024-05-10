@@ -8,4 +8,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "listings#index"
+
+  if defined? Debugbar
+    mount Debugbar::Engine => Debugbar.config.prefix
+  end
 end
