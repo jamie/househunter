@@ -72,20 +72,13 @@ class Importer
 
   def import_listing(attrs)
     listing = Listing.find_or_create_by(external_id: attrs["Id"])
-    listing.touch(:imported_at)
-
-    return if listing.last_imported == attrs
-
-    diff_keys = Hashdiff.diff(listing.last_imported, attrs).map { _1[1] }.compact - IGNORED_ATTRS
-    return if diff_keys.empty?
-
-    diff_keys = Hashdiff.diff(listing.last_imported, attrs).map { _1[1] }.compact - UNIMPORTANT_ATTRS
-    if diff_keys.any?
-      print "."
+    listing.sync_with(attrs)
+    if listing.changed?
+      listing.imported_at = Time.current
+      listing.save
       listing.import_listings.create(json: attrs)
+      print "."
+      true
     end
-
-    listing.sync_last_import!
-    true
   end
 end

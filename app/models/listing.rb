@@ -45,20 +45,14 @@ class Listing < ActiveRecord::Base
     end
   end
 
-  def sync_last_import!
-    last = last_imported
-    self.lat = last.dig("Property", "Address", "Latitude")
-    self.lng = last.dig("Property", "Address", "Longitude")
-    self.address = last.dig("Property", "Address", "AddressText").to_s.split("|").first
-    self.price = last.dig("Property", "Price").to_s.gsub(/[^0-9]/, "").to_i
-    self.bedrooms = last.dig("Building", "Bedrooms")
-    self.bathrooms = last.dig("Building", "BathroomTotal")
-    self.external_url = "https://www.realtor.ca#{last_imported.dig("RelativeURLEn")}"
-    self.tooltip_photo = last.dig("Property", "Photo", 0, "MedResPath")
-
-    if changed?
-      self.imported_at = Time.now
-      save
-    end
+  def sync_with(import)
+    self.lat = import.dig("Property", "Address", "Latitude")
+    self.lng = import.dig("Property", "Address", "Longitude")
+    self.address = import.dig("Property", "Address", "AddressText").to_s.split("|").first
+    self.price = import.dig("Property", "Price").to_s.gsub(/[^0-9]/, "").to_i
+    self.bedrooms = import.dig("Building", "Bedrooms")
+    self.bathrooms = import.dig("Building", "BathroomTotal")
+    self.external_url = "https://www.realtor.ca#{import.dig("RelativeURLEn")}"
+    self.tooltip_photo = import.dig("Property", "Photo", 0, "MedResPath")
   end
 end
