@@ -3,8 +3,6 @@ class ListingsController < ApplicationController
 
   skip_forgery_protection
 
-  before_action :import_listings, only: :index
-
   before_action do
     session[:min_price] = params[:min_price] if params[:min_price].present?
     session[:max_price] = params[:max_price] if params[:max_price].present?
@@ -19,7 +17,11 @@ class ListingsController < ApplicationController
   end
 
   before_action do
-    @latest_import = Import.maximum(:imported_at)
+    @latest_import = Listing.maximum(:imported_at)
+    if @latest_import < 8.hours.ago
+      flash.now[:notice] = "Updating properties..."
+      ImportJob.perform_later
+    end
   end
 
   def index
@@ -31,14 +33,5 @@ class ListingsController < ApplicationController
       format.html
       format.js
     end
-  end
-
-  private
-
-  def import_listings
-    return if Listing.maximum(:created_at) > 8.hours.ago
-
-    flash.now[:notice] = "Updating properties..."
-    ImportJob.perform_later
   end
 end
