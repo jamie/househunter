@@ -28,7 +28,7 @@ class Listing < ActiveRecord::Base
     ].map { |price| price.round(-4) } + [Float::INFINITY]
   end
 
-  def last_imported = import_listings.last&.json || {}
+  def last_imported = imports.last&.json || {}
 
   def last_update = imported_at.strftime("%b %d")
 
