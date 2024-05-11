@@ -13,9 +13,21 @@ class Importer
       # TODO: rescue "HTTP::Error: Unknown MIME type: text/html (HTTP::Error)" when credentials expire
       results = response.parse["Results"]
       break if results.empty?
+      ids = results.map { |attrs| attrs["Id"] }
+      listings = Listing.where(external_id: ids).index_by(&:external_id)
       results.each do |attrs|
-        listing = Listing.find_or_create_by(external_id: attrs["Id"])
-        listing.sync_with(attrs)
+        listing = listings[attrs["Id"].to_i] || Listing.new(external_id: attrs["Id"])
+
+        listing.attributes = {
+          lat: attrs.dig("Property", "Address", "Latitude"),
+          lng: attrs.dig("Property", "Address", "Longitude"),
+          address: attrs.dig("Property", "Address", "AddressText").to_s.split("|").first,
+          price: attrs.dig("Property", "Price").to_s.gsub(/[^0-9]/, "").to_i,
+          bedrooms: attrs.dig("Building", "Bedrooms"),
+          bathrooms: attrs.dig("Building", "BathroomTotal"),
+          external_url: "https://www.realtor.ca#{attrs.dig("RelativeURLEn")}",
+          tooltip_photo: attrs.dig("Property", "Photo", 0, "MedResPath")
+        }
         if listing.changed?
           listing.imported_at = import_time
           listing.save

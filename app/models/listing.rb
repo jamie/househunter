@@ -44,15 +44,4 @@ class Listing < ActiveRecord::Base
       "house#{index}"
     end
   end
-
-  def sync_with(import)
-    self.lat = import.dig("Property", "Address", "Latitude")
-    self.lng = import.dig("Property", "Address", "Longitude")
-    self.address = import.dig("Property", "Address", "AddressText").to_s.split("|").first
-    self.price = import.dig("Property", "Price").to_s.gsub(/[^0-9]/, "").to_i
-    self.bedrooms = import.dig("Building", "Bedrooms")
-    self.bathrooms = import.dig("Building", "BathroomTotal")
-    self.external_url = "https://www.realtor.ca#{import.dig("RelativeURLEn")}"
-    self.tooltip_photo = import.dig("Property", "Photo", 0, "MedResPath")
-  end
 end
