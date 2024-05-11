@@ -38,7 +38,7 @@ class Listing < ActiveRecord::Base
       "star#{index}"
     elsif imported_at == last_import
       "house#{index}new"
-    elsif imported_at > 3.days.ago
+    elsif imported_at > 1.days.ago
       "house#{index}recent"
     else
       "house#{index}"
