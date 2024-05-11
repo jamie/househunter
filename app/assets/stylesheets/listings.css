@@ -23,7 +23,7 @@ body {
 }
 
 #map_legend {
-    width: 440px;
+    width: 500px;
     position: absolute;
     z-index: 800; /* compare with Leaflet z-index https://leafletjs.com/reference.html#map-pane */
     top: 10px;
