@@ -1,27 +1,30 @@
 <div id="map_legend">
-  <div id="map_legend_prices"></div>
+  <span id="map_legend_prices"></span>
+  <button popovertarget="search_filters">Edit</button>
 
-  <div class="double-ended-range">
-    <input type="range" id="min_price" name="min_price" list="price_values" min="0" max="<%= ListingsController::UNLIMITED_PRICE %>" step="50000" value="<%= @min_price %>" />
-    <input type="range" id="max_price" name="max_price" list="price_values" min="0" max="<%= ListingsController::UNLIMITED_PRICE %>" step="50000" value="<%= @max_price %>" />
+  <div id="search_filters" popover="manual">
+    <div class="double-ended-range">
+      <input type="range" id="min_price" name="min_price" list="price_values" min="0" max="<%= ListingsController::UNLIMITED_PRICE %>" step="50000" value="<%= @min_price %>" />
+      <input type="range" id="max_price" name="max_price" list="price_values" min="0" max="<%= ListingsController::UNLIMITED_PRICE %>" step="50000" value="<%= @max_price %>" />
 
-    <datalist id="price_values">
-      <option value="0" label="0" />
-      <option value="250000" label="250k" />
-      <option value="500000" label="500k" />
-      <option value="750000" label="750k" />
-      <option value="1000000" label="1M" />
-      <option value="1250000" label="1.25M" />
-      <option value="1500000" label="1.5M" />
-      <option value="1750000" label="1.75M" />
-      <option value="2000000" label="2M" />
-      <option value="<%= ListingsController::UNLIMITED_PRICE %>" label="No Limit" />
-    </datalist>
-  </div>
+      <datalist id="price_values">
+        <option value="0" label="0" />
+        <option value="250000" label="250k" />
+        <option value="500000" label="500k" />
+        <option value="750000" label="750k" />
+        <option value="1000000" label="1M" />
+        <option value="1250000" label="1.25M" />
+        <option value="1500000" label="1.5M" />
+        <option value="1750000" label="1.75M" />
+        <option value="2000000" label="2M" />
+        <option value="<%= ListingsController::UNLIMITED_PRICE %>" label="No Limit" />
+      </datalist>
+    </div>
 
-  <div>
-    <%= check_box_tag "new_listings", 1, @new_listings %>
-    <%= label_tag "new_listings", "New Listings" %>
+    <div>
+      <%= check_box_tag "new_listings", 1, @new_listings %>
+      <%= label_tag "new_listings", "New Listings" %>
+    </div>
   </div>
 </div>
 <div id="map"></div>

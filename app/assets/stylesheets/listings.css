@@ -40,6 +40,15 @@ body {
         text-align: center;
     }
 
+    :popover-open {
+        position: absolute;
+        inset: unset;
+    }
+    #search_filters {
+        right: 10px;
+        top: 50px;
+    }
+
     .double-ended-range {
         position: relative;
         input[type="range"] {
@@ -76,9 +85,3 @@ body {
         }
     }
 }
-
-/* #mls_frame { position: absolute; top: 0; right: 0; height: 99%; flex: 0 0 500px; }
-#map_legend table { margin: 0; }
-#map_legend th, #map_legend td { padding: 0; margin: 0; }
-.listing_info { width: 250px; }
-.photo { float: left; } */
