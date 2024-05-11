@@ -20,7 +20,7 @@ class ListingsController < ApplicationController
 
     respond_to do |format|
       format.html {
-        if @latest_import < 8.hours.ago
+        if @latest_import < 1.hours.ago
           flash.now[:notice] = "Updating properties..."
           ImportJob.perform_later
         end
