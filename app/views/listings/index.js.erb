@@ -8,10 +8,13 @@ markers = []
   ).addTo(map)
   marker.bindPopup(`
     <a target="_blank" rel="noreferrer noopener" href="<%= listing.external_url %>"><img class="photo" src="<%= listing.tooltip_photo %>"/></a></br>
-    <strong>$<%= listing.price/1000 %>k</strong> - <%= listing.address %><br/>
+    <%= listing.address %>
+    <br/>
+    <strong>$<%= listing.price/1000 %>k</strong> -
     <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %>
     <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %>
-    - Updated <%= listing.last_update %>
+    <br/>
+    Added <%= listing.created_at.strftime("%b %d") %> - Updated <%= listing.imported_at.strftime("%b %d") %>
   `)
   markers.push(marker)
 <% end %>

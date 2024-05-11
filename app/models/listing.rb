@@ -30,8 +30,6 @@ class Listing < ActiveRecord::Base
 
   def last_imported = imports.last&.json || {}
 
-  def last_update = imported_at.strftime("%b %d")
-
   def marker_icon(price_spread, last_import)
     index = price_spread.index { |spread| price < spread }
     if starred?
