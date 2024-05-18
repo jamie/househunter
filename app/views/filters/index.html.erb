@@ -1,0 +1,74 @@
+<turbo-frame id="map_legend_frame">
+  <div id="map_legend_prices"></div>
+
+  <div id="search_filters" popover="manual">
+    <div class="double-ended-range">
+      <input type="range" id="min_price" name="min_price" list="price_values" min="0" max="<%= ListingsController::UNLIMITED_PRICE %>" step="50000" value="<%= @min_price %>" />
+      <input type="range" id="max_price" name="max_price" list="price_values" min="0" max="<%= ListingsController::UNLIMITED_PRICE %>" step="50000" value="<%= @max_price %>" />
+
+      <datalist id="price_values">
+        <option value="0" label="0" />
+        <option value="250000" label="250k" />
+        <option value="500000" label="500k" />
+        <option value="750000" label="750k" />
+        <option value="1000000" label="1M" />
+        <option value="1250000" label="1.25M" />
+        <option value="1500000" label="1.5M" />
+        <option value="1750000" label="1.75M" />
+        <option value="2000000" label="2M" />
+        <option value="<%= ListingsController::UNLIMITED_PRICE %>" label="No Limit" />
+      </datalist>
+    </div>
+
+    <div>
+      <input type="range" id="max_age" name="max_age" list="age_values" min="0" max="<%= Listing::UNLIMITED_AGE %>" step="1" value="<%= @max_age %>" />
+
+      <datalist id="age_values">
+        <option value="0" label="Today" />
+        <option value="7" label="1 Week" />
+        <option value="14" label="2 Weeks" />
+        <option value="21" label="3 Weeks" />
+        <option value="<%= Listing::UNLIMITED_AGE %>" label="All" />
+      </datalist>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    // Prevent price selectors from overlapping
+    document.getElementById('min_price').addEventListener('input', (e) => {
+      let maxValue = document.getElementById('max_price').value
+      if (parseInt(e.target.value) >= parseInt(maxValue)) {
+        document.getElementById('min_price').value = parseInt(maxValue) - 50000
+      }
+    })
+    document.getElementById('max_price').addEventListener('input', (e) => {
+      let minValue = document.getElementById('min_price').value
+      if (parseInt(e.target.value) <= parseInt(minValue)) {
+        document.getElementById('max_price').value = parseInt(minValue) + 50000
+      }
+    })
+
+    // Submit price ranges on change
+    document.getElementById('min_price').addEventListener('change', (e) => {
+      let minPrice = e.target.value
+      var script = document.createElement('script')
+      script.src = `/listings.js?min_price=${minPrice}`
+      document.body.appendChild(script)
+    })
+    document.getElementById('max_price').addEventListener('change', (e) => {
+      let maxPrice = e.target.value
+      var script = document.createElement('script')
+      script.src = `/listings.js?max_price=${maxPrice}`
+      document.body.appendChild(script)
+    })
+
+    // Submit max age on change
+    document.getElementById('max_age').addEventListener('change', (e) => {
+      let max_age = e.target.value
+      var script = document.createElement('script')
+      script.src = `/listings.js?max_age=${max_age}`
+      document.body.appendChild(script)
+    })
+  </script>
+  <script src="/listings.js"></script>
+</turbo-frame>

@@ -1,4 +1,8 @@
-class IndexController < ApplicationController
+class FiltersController < ApplicationController
+  UNLIMITED_PRICE = 2_250_000
+
+  skip_forgery_protection
+
   before_action do
     # Update session with latest filters
     session[:min_price] = params[:min_price] if params[:min_price].present?
@@ -12,17 +16,15 @@ class IndexController < ApplicationController
     # Bathrooms
 
     # First seen? Recent update?
-    @max_age = session[:max_age] || UNLIMITED_AGE
+    @max_age = session[:max_age] || Listing::UNLIMITED_AGE
 
     session[:new_listings] = params[:new_listings] if params[:new_listings].present?
     @new_listings = ActiveModel::Type::Boolean.new.cast(session[:new_listings])
   end
 
   def index
-    latest_import = Listing.maximum(:imported_at)
-    if latest_import < 1.hours.ago
-      flash.now[:notice] = "Updating properties..."
-      ImportJob.perform_later
-    end
+    relation = Listing.price_range(@min_price, @max_price).filtered.recent(@max_age)
+    @price_spread = relation.price_spread
+    @listings = relation.all
   end
 end

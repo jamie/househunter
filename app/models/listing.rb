@@ -1,9 +1,17 @@
 class Listing < ActiveRecord::Base
+  UNLIMITED_AGE = 28
+
   has_many :imports, dependent: :destroy
 
   def self.filtered = where("status != ?", "ignore")
 
-  def self.recent(n = 5) = where("created_at > ?", n.days.ago)
+  def self.recent(n = 5)
+    if n == UNLIMITED_AGE
+      scope
+    else
+      where("created_at > ?", (n.to_i + 1).days.ago)
+    end
+  end
 
   def self.min_price(price) = price.presence ? where("price > ?", price) : all
 
