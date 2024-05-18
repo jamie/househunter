@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", :as => :rails_health_check
 
   # Defines the root path route ("/")
-  root "listings#index"
+  root "index#index"
 
   if defined? Debugbar
     mount Debugbar::Engine => Debugbar.config.prefix
