@@ -5,6 +5,7 @@ class Importer
 
   def do_import
     page = 1
+    count = Listing.count
     updated = 0
     import_time = Time.current
 
@@ -39,8 +40,9 @@ class Importer
       page += 1
       print "/"
     end
+    created = Listing.count - count
     puts
-    `say "imported #{updated} listings"`
+    `say "imported #{updated} listings, #{created} new"`
   end
 
   def http
@@ -59,7 +61,7 @@ class Importer
       LatitudeMin: 49.03,
       LongitudeMin: -124.08,
       PropertyTypeGroupID: 1, # Residential
-      TransactionTypeId: 2,
+      TransactionTypeId: 2, # For Sale (not rent)
       PropertySearchTypeId: 0,
       RecordsPerPage: 50,
       ApplicationId: 1,
