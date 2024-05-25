@@ -6,8 +6,8 @@ class Listing < ActiveRecord::Base
   def self.filtered = where("status != ?", "ignore")
 
   def self.recent(n = 5)
-    if n == UNLIMITED_AGE
-      scope
+    if n.to_i == UNLIMITED_AGE
+      all
     else
       where("created_at > ?", (n.to_i + 1).days.ago)
     end
