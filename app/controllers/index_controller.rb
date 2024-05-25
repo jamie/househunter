@@ -12,7 +12,7 @@ class IndexController < ApplicationController
     # Bathrooms
 
     # First seen? Recent update?
-    @max_age = session[:max_age] || UNLIMITED_AGE
+    @max_age = session[:max_age] || Listing::UNLIMITED_AGE
 
     session[:new_listings] = params[:new_listings] if params[:new_listings].present?
     @new_listings = ActiveModel::Type::Boolean.new.cast(session[:new_listings])
