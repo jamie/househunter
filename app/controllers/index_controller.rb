@@ -6,7 +6,7 @@ class IndexController < ApplicationController
     session[:max_age] = params[:max_age] if params[:max_age].present?
 
     @min_price = session[:min_price] || 0
-    @max_price = session[:max_price] || UNLIMITED_PRICE
+    @max_price = session[:max_price] || ListingsController::UNLIMITED_PRICE
 
     # Bedrooms
     # Bathrooms
