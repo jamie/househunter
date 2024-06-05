@@ -29,4 +29,10 @@ class ListingsController < ApplicationController
       }
     end
   end
+
+  def show
+    # Map popup
+    listing = Listing.find(params[:id])
+    render locals: {listing:}, layout: false
+  end
 end

@@ -1,0 +1,10 @@
+<%= turbo_frame_tag dom_id(listing) + "_marker_popup" do %>
+  <a target="_blank" rel="noreferrer noopener" href="<%= listing.external_url %>"><img class="photo" src="<%= listing.tooltip_photo %>"/></a></br>
+  <%= listing.address %>
+  <br/>
+  <strong>$<%= listing.price/1000 %>k</strong> -
+  <%= image_tag("bed", class: "icon") %> <%= listing.bedrooms %>
+  <%= image_tag("bath", class: "icon") %> <%= listing.bathrooms %>
+  <br/>
+  Added <%= listing.created_at.strftime("%b %d") %> - Updated <%= listing.imported_at.strftime("%b %d") %>
+<% end %>
