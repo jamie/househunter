@@ -36,6 +36,7 @@ class Importer
           print "."
           updated += 1
         end
+        listing.touch(:updated_at)
       end
       page += 1
       print "/"

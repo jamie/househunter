@@ -19,7 +19,7 @@ class IndexController < ApplicationController
   end
 
   def index
-    latest_import = Listing.maximum(:imported_at)
+    latest_import = Listing.maximum(:updated_at)
     if latest_import < 1.hours.ago
       flash.now[:notice] = "Updating properties..."
       ImportJob.perform_later
