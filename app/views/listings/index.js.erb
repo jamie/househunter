@@ -1,17 +1,17 @@
 // Reset markers, then add new ones
 markers.forEach((m) => m.remove())
-markers = []
-<% @listings.each do |listing| %>
-  var marker = L.marker(
-    [<%= listing.lat %>, <%= listing.lng %>],
-    {icon: marker_icons.<%= listing.marker_icon(@price_spread, @latest_import) %>}
-  ).addTo(map)
+markers = [
+<% @listings.map do |listing| %>
+  [<%= listing.id %>, <%= listing.lat %>, <%= listing.lng %>, "<%= listing.marker_icon(@price_spread, @latest_import) %>"],
+<% end %>
+].map(([id, lat, lng, icon]) => {
+  var marker = L.marker([lat, lng], {icon: marker_icons[icon]}).addTo(map)
   marker.bindPopup(
-    `<turbo-frame id="<%= dom_id(listing) %>_marker_popup" src="<%= listing_path(listing) %>" loading="lazy"></turbo-frame>`,
+    `<turbo-frame id="listing_${id}_marker_popup" src="/listings/${id}" loading="lazy"></turbo-frame>`,
     {minWidth: 200}
   )
-  markers.push(marker)
-<% end %>
+  return marker
+})
 console.log("Listings: ", <%= @listings.size %>)
 
 document.getElementById('map_legend_prices').innerHTML = `
