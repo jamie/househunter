@@ -21,7 +21,9 @@ class ListingsController < ApplicationController
   def index
     respond_to do |format|
       format.js {
-        relation = Listing.price_range(@min_price, @max_price).filtered.recent(@max_age)
+        relation = Listing.price_range(@min_price, @max_price).filtered.fresh.recent(@max_age).or(
+          Listing.starred.fresh
+        )
         @price_spread = relation.price_spread
         @listings = relation.all
       }

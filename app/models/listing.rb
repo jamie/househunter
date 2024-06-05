@@ -3,13 +3,17 @@ class Listing < ActiveRecord::Base
 
   has_many :imports, dependent: :destroy
 
-  def self.filtered = where("status != ?", "ignore")
+  def self.filtered = where.not(status: "ignore")
+
+  def self.starred = where(starred: true)
+
+  def self.fresh = where(updated_at: 3.days.ago..)
 
   def self.recent(n = 5)
     if n.to_i == UNLIMITED_AGE
       all
     else
-      where("created_at > ?", (n.to_i + 1).days.ago)
+      where(created_at: (n.to_i + 1).days.ago..)
     end
   end
 
