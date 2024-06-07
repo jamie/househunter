@@ -43,7 +43,7 @@ class Listing < ActiveRecord::Base
   def last_imported = imports.last&.json || {}
 
   def history
-    Listing.where(address: address).where.not(id: id).order(:created_at).select(:updated_at, :price)
+    Listing.where(address: address).where.not(id: id).order("created_at desc").select(:updated_at, :price)
   end
 
   def marker_icon(price_spread, last_import)
