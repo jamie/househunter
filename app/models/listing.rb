@@ -42,6 +42,8 @@ class Listing < ActiveRecord::Base
 
   def last_imported = imports.last&.json || {}
 
+  def sqft = last_imported.dig("Building", "SizeInterior")
+
   def history
     Listing.where(address: address).where.not(id: id).order("created_at desc").select(:updated_at, :price)
   end
