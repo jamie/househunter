@@ -5,7 +5,6 @@ class Importer
 
   def do_import
     page = 1
-    count = Listing.count
     updated = 0
     import_time = Time.current
 
@@ -41,9 +40,7 @@ class Importer
       page += 1
       print "/"
     end
-    created = Listing.count - count
     puts
-    `say "imported #{updated} listings, #{created} new"`
   end
 
   def http
