@@ -26,5 +26,8 @@ class FiltersController < ApplicationController
     relation = Listing.price_range(@min_price, @max_price).filtered.recent(@max_age)
     @price_spread = relation.price_spread
     @listings = relation.all
+
+    # Avoid issues where Firefox un-suspends the tab at /filters
+    redirect_to root_url unless request.env["HTTP_TURBO_FRAME"]
   end
 end
