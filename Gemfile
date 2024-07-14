@@ -57,6 +57,7 @@ group :development do
   gem "rack-mini-profiler"
   gem "debugbar"
   gem "rails_live_reload"
+  gem "ruby-lsp"
 end
 
 group :test do
