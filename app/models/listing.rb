@@ -52,9 +52,9 @@ class Listing < ActiveRecord::Base
     index = price_spread.index { |spread| price < spread }
     if starred?
       "star#{index}"
-    elsif created_at > 8.hours.ago
+    elsif created_at > 16.hours.ago
       "house#{index}new"
-    elsif imported_at > 1.days.ago
+    elsif imported_at > 3.days.ago
       "house#{index}recent"
     else
       "house#{index}"
