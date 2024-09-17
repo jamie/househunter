@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_29_035928) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_17_042514) do
   create_table "imports", force: :cascade do |t|
     t.integer "import_id"
     t.integer "listing_id"
