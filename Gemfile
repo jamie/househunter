@@ -48,9 +48,6 @@ gem "activerecord-enhancedsqlite3-adapter"
 gem "appsignal"
 gem "hashdiff"
 gem "http"
-gem "opentelemetry-sdk"
-gem "opentelemetry-exporter-otlp"
-gem "opentelemetry-instrumentation-rails"
 gem "solid_queue"
 
 group :development, :test do
