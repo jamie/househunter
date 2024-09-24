@@ -13,4 +13,5 @@ Rails.application.routes.draw do
   if defined? Debugbar
     mount Debugbar::Engine => Debugbar.config.prefix
   end
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 end

@@ -48,6 +48,7 @@ gem "activerecord-enhancedsqlite3-adapter"
 gem "appsignal"
 gem "hashdiff"
 gem "http"
+gem "mission_control-jobs"
 gem "solid_queue"
 
 group :development, :test do
