@@ -38,6 +38,8 @@ class Listing < ActiveRecord::Base
       mean + 1 * stddev,
       mean + 1.5 * stddev
     ].map { |price| price.round(-4) } + [Float::INFINITY]
+  rescue
+    [0, 200_000, 400_000, 600_000, 800_000, 1_000_000, 1_200_000, Float::INFINITY]
   end
 
   def last_imported = imports.last&.json || {}
