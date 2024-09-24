@@ -1,0 +1,4 @@
+production:
+  revision: "<%= `git rev-parse --short HEAD` %>"
+development:
+  revision: "<%= `git rev-parse --short HEAD` %>"
