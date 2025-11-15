@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.3.4"
+ruby "3.4.6"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1"
@@ -49,6 +49,7 @@ gem "appsignal"
 gem "hashdiff"
 gem "http"
 gem "mission_control-jobs"
+gem "openssl", ">= 3.3.1"
 gem "solid_queue"
 
 group :development, :test do
