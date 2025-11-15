@@ -23,5 +23,7 @@ module Househunter
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.importer = config_for(:importer)
   end
 end
