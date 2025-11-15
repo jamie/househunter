@@ -47,7 +47,7 @@ class Listing < ActiveRecord::Base
   def sqft = last_imported.dig("Building", "SizeInterior")
 
   def history
-    Listing.where(address: address).where.not(id: id).order("created_at desc").select(:updated_at, :price)
+    Listing.where(address: address).where.not(id: id).order("created_at desc").select(:imported_at, :price)
   end
 
   def marker_icon(price_spread, last_import)

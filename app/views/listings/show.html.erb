@@ -10,6 +10,6 @@
 
   <strong>$<%= listing.price/1000 %>k</strong> @ <%= listing.created_at.strftime("%b %d") %><br />
   <% listing.history.each do |prior| %>
-    $<%= prior.price/1000 %>k @ <%= prior.updated_at.strftime("%b %d") %><br />
+    $<%= prior.price/1000 %>k @ <%= prior.imported_at.strftime("%b %d") %><br />
   <% end %>
 <% end %>
