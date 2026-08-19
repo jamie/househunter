@@ -1,2 +1,0 @@
-shared:
-  realtor_cookie: <%= ENV["REALTOR_COOKIE"] %>

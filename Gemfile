@@ -47,7 +47,6 @@ gem "bootsnap", require: false
 gem "activerecord-enhancedsqlite3-adapter"
 gem "appsignal"
 gem "hashdiff"
-gem "http"
 gem "mission_control-jobs"
 gem "openssl", ">= 3.3.1"
 gem "solid_queue"

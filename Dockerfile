@@ -40,9 +40,13 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
-# Install packages needed for deployment
+# Install packages needed for deployment. python3 backs lib/realtor_fetch.py,
+# which Importer shells out to -- realtor.ca's bot protection fingerprints the
+# TLS handshake, so the fetch needs curl_cffi's browser impersonation to get
+# through at all. See lib/realtor_fetch.py for the details.
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips && \
+    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips python3 python3-pip && \
+    pip3 install --break-system-packages --no-cache-dir curl_cffi && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
