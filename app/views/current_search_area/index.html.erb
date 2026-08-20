@@ -1,0 +1,19 @@
+<turbo-frame id="current_search_area_frame">
+  <div id="search_area_panel">
+    <%= link_to "◀", current_search_area_path(direction: "prev"), class: "arrow" %>
+    <span id="search_area_name"><%= @search_area&.name || "No search areas" %></span>
+    <%= link_to "▶", current_search_area_path(direction: "next"), class: "arrow" %>
+    <%= link_to "[edit]", search_areas_path, id: "search_area_edit_link", data: {turbo_frame: "_top"} %>
+  </div>
+
+  <% if @search_area %>
+    <script type="text/javascript">
+      if (window.map) {
+        map.fitBounds([
+          [<%= @search_area.lat_min %>, <%= @search_area.lng_min %>],
+          [<%= @search_area.lat_max %>, <%= @search_area.lng_max %>]
+        ]);
+      }
+    </script>
+  <% end %>
+</turbo-frame>

@@ -12,12 +12,12 @@
     <script src="//unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <%= javascript_importmap_tags %>
-    <%= debugbar_head %>
+    <%= debugbar_head if defined?(Debugbar) %>
   </head>
 
   <body>
     <%= render partial: "flash" %>
     <%= yield %>
-    <%= debugbar_body %>
+    <%= debugbar_body if defined?(Debugbar) %>
   </body>
 </html>

@@ -16,6 +16,8 @@ class IndexController < ApplicationController
 
     session[:new_listings] = params[:new_listings] if params[:new_listings].present?
     @new_listings = ActiveModel::Type::Boolean.new.cast(session[:new_listings])
+
+    @search_area = current_search_area
   end
 
   def index

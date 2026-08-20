@@ -22,6 +22,41 @@ body {
     }
 }
 
+#search_area_legend {
+    width: 300px;
+    position: absolute;
+    z-index: 800; /* compare with Leaflet z-index https://leafletjs.com/reference.html#map-pane */
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #eee;
+    border: 2px solid #555;
+    padding: 5px;
+    text-align: center;
+
+    #search_area_panel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+    }
+
+    #search_area_name {
+        font-weight: bold;
+        flex: 1;
+        text-align: center;
+    }
+
+    .arrow {
+        text-decoration: none;
+        padding: 0 0.25em;
+    }
+
+    #search_area_edit_link {
+        font-size: 0.85em;
+    }
+}
+
 #map_legend {
     width: 500px;
     position: absolute;

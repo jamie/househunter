@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2024_09_17_042514) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_20_214731) do
   create_table "imports", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "import_id"
@@ -35,6 +35,17 @@ ActiveRecord::Schema[8.1].define(version: 2024_09_17_042514) do
     t.boolean "starred", default: false
     t.string "status", default: ""
     t.string "tooltip_photo"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "search_areas", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "lat_max", precision: 9, scale: 6
+    t.decimal "lat_min", precision: 9, scale: 6
+    t.decimal "lng_max", precision: 9, scale: 6
+    t.decimal "lng_min", precision: 9, scale: 6
+    t.text "name"
+    t.decimal "radius", precision: 9, scale: 6
     t.datetime "updated_at", null: false
   end
 

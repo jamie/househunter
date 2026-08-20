@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Vancouver
+  lat_min: 49.03
+  lat_max: 49.33
+  lng_min: -124.08
+  lng_max: -123.88
+  radius: 9.99
+
+two:
+  name: Victoria
+  lat_min: 48.35
+  lat_max: 48.55
+  lng_min: -123.45
+  lng_max: -123.25
+  radius: 9.99

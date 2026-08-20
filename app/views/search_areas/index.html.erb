@@ -1,0 +1,146 @@
+<h1>Search Areas</h1>
+<p><%= link_to "&larr; Back to map".html_safe, root_path %></p>
+
+<div id="search_areas">
+  <% @search_areas.each do |area| %>
+    <div class="search_area_row" data-search-area-id="<%= area.id %>">
+      <div class="search_area_fields">
+        <input type="text" class="search_area_name_input" value="<%= area.name %>" />
+
+        <div class="search_area_derived">
+          <label>Center: <span class="center_lat"><%= "%.6f" % area.center_lat %></span>, <span class="center_lng"><%= "%.6f" % area.center_lng %></span></label>
+        </div>
+
+        <div class="search_area_derived">
+          <label>Width: <span class="width_label"><%= "%.2f" % area.width %>&deg;</span></label>
+          <input type="range" class="width_slider" min="0.01" max="<%= SearchArea::MAX_SPAN %>" step="0.01" value="<%= area.width %>" />
+        </div>
+
+        <div class="search_area_derived">
+          <label>Height: <span class="height_label"><%= "%.2f" % area.height %>&deg;</span></label>
+          <input type="range" class="height_slider" min="0.01" max="<%= SearchArea::MAX_SPAN %>" step="0.01" value="<%= area.height %>" />
+        </div>
+
+        <div class="search_area_actions">
+          <%= button_to "Delete", search_area_path(area), method: :delete, data: {turbo_confirm: "Delete #{area.name}?"} %>
+          <%= button_to "Clone", clone_search_area_path(area), method: :post %>
+        </div>
+
+        <div class="search_area_status"></div>
+      </div>
+
+      <div class="search_area_map"
+           data-lat-min="<%= area.lat_min %>" data-lat-max="<%= area.lat_max %>"
+           data-lng-min="<%= area.lng_min %>" data-lng-max="<%= area.lng_max %>"></div>
+    </div>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  // Manage-screen maps: each row gets its own Leaflet map with a rectangle
+  // marking the search bounds. Dragging the map moves the box (center
+  // changes, size doesn't); the sliders resize it (center doesn't change).
+  // Both save to the backend on a 1s debounce.
+  document.querySelectorAll(".search_area_row").forEach(function (row) {
+    var id = row.dataset.searchAreaId;
+    var mapEl = row.querySelector(".search_area_map");
+    var nameInput = row.querySelector(".search_area_name_input");
+    var widthSlider = row.querySelector(".width_slider");
+    var heightSlider = row.querySelector(".height_slider");
+    var widthLabel = row.querySelector(".width_label");
+    var heightLabel = row.querySelector(".height_label");
+    var centerLatEl = row.querySelector(".center_lat");
+    var centerLngEl = row.querySelector(".center_lng");
+    var statusEl = row.querySelector(".search_area_status");
+
+    var latMin = parseFloat(mapEl.dataset.latMin);
+    var latMax = parseFloat(mapEl.dataset.latMax);
+    var lngMin = parseFloat(mapEl.dataset.lngMin);
+    var lngMax = parseFloat(mapEl.dataset.lngMax);
+    var centerLat = (latMin + latMax) / 2;
+    var centerLng = (lngMin + lngMax) / 2;
+
+    var map = L.map(mapEl);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    var rectangle = L.rectangle([[latMin, lngMin], [latMax, lngMax]], {
+      color: "#555",
+      weight: 2,
+      fillOpacity: 0.1
+    }).addTo(map);
+
+    // Zoom to fit the search box, rather than a fixed zoom level that may
+    // crop a wide area or leave a narrow one lost in the middle.
+    map.fitBounds(rectangle.getBounds(), {padding: [20, 20]});
+
+    function updateLabels() {
+      centerLatEl.textContent = centerLat.toFixed(6);
+      centerLngEl.textContent = centerLng.toFixed(6);
+      widthLabel.textContent = (lngMax - lngMin).toFixed(2) + "°";
+      heightLabel.textContent = (latMax - latMin).toFixed(2) + "°";
+    }
+
+    function applySlidersAroundCenter() {
+      var width = parseFloat(widthSlider.value);
+      var height = parseFloat(heightSlider.value);
+      latMin = centerLat - height / 2;
+      latMax = centerLat + height / 2;
+      lngMin = centerLng - width / 2;
+      lngMax = centerLng + width / 2;
+      rectangle.setBounds([[latMin, lngMin], [latMax, lngMax]]);
+      updateLabels();
+      scheduleSave();
+    }
+
+    var saveTimeout = null;
+
+    function scheduleSave() {
+      if (saveTimeout) clearTimeout(saveTimeout);
+      statusEl.textContent = "Saving…";
+      saveTimeout = setTimeout(save, 1000);
+    }
+
+    function save() {
+      fetch("/search_areas/" + id, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          search_area: {
+            name: nameInput.value,
+            lat_min: latMin,
+            lat_max: latMax,
+            lng_min: lngMin,
+            lng_max: lngMax
+          }
+        })
+      }).then(function (response) {
+        statusEl.textContent = response.ok ? "Saved" : "Save failed";
+      }).catch(function () {
+        statusEl.textContent = "Save failed";
+      });
+    }
+
+    widthSlider.addEventListener("input", applySlidersAroundCenter);
+    heightSlider.addEventListener("input", applySlidersAroundCenter);
+    nameInput.addEventListener("input", scheduleSave);
+
+    // whenReady so the initial programmatic center doesn't count as a drag
+    map.whenReady(function () {
+      map.on("move", function () {
+        var center = map.getCenter();
+        centerLat = center.lat;
+        centerLng = center.lng;
+        applySlidersAroundCenter();
+      });
+    });
+
+    updateLabels();
+  });
+</script>

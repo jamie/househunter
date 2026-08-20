@@ -2,6 +2,8 @@ class ImportJob < ApplicationJob
   queue_as :default
 
   def perform(*args)
-    Importer.new.do_import
+    SearchArea.find_each do |search_area|
+      Importer.new(search_area).do_import
+    end
   end
 end

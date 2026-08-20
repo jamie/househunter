@@ -15,6 +15,10 @@ class Importer
   # stays a handful of queries rather than one per listing.
   BATCH_SIZE = 200
 
+  def initialize(search_area)
+    @search_area = search_area
+  end
+
   def do_import
     updated = 0
     import_time = Time.current
@@ -79,10 +83,10 @@ class Importer
 
   def query_params
     {
-      LatitudeMax: 49.33,
-      LongitudeMax: -123.85,
-      LatitudeMin: 49.03,
-      LongitudeMin: -124.08,
+      LatitudeMax: @search_area.lat_max,
+      LongitudeMax: @search_area.lng_max,
+      LatitudeMin: @search_area.lat_min,
+      LongitudeMin: @search_area.lng_min,
       PropertyTypeGroupID: 1, # Residential
       TransactionTypeId: 2, # For Sale (not rent)
       PropertySearchTypeId: 0,

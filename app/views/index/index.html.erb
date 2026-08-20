@@ -3,14 +3,24 @@
     <p>Loading...</p>
   </turbo-frame>
 </div>
+<div id="search_area_legend">
+  <turbo-frame id="current_search_area_frame" src="/current_search_area">
+    <p>Loading...</p>
+  </turbo-frame>
+</div>
 <div id="map"></div>
 
 <script type="text/javascript">
   // Map initialization
-  var map = L.map('map', {
-    center: [49.19, -123.98],
-    zoom: 13
-  });
+  var map = L.map('map');
+  <% if @search_area %>
+    map.fitBounds([
+      [<%= @search_area.lat_min %>, <%= @search_area.lng_min %>],
+      [<%= @search_area.lat_max %>, <%= @search_area.lng_max %>]
+    ]);
+  <% else %>
+    map.setView([49.19, -123.98], 13);
+  <% end %>
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
